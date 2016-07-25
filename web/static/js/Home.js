@@ -1,13 +1,12 @@
 import React, { Component } from "react";
+import { blue, orange, offWhite } from "./styles/colors";
 
 class Home extends Component {
   render() {
-    return (
-      <div>
-        <p>Hello World!</p>
-      </div>
-    );
+    return;
   }
 }
+
+const styles = {}
 
 export default Home;
