@@ -1,18 +1,11 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import { Router, Route, browserHistory } from "react-router";
-import { createStore, combineReducers } from "redux";
+import { createStore } from "redux";
 import { Provider } from "react-redux";
-import { syncHistoryWithStore, routerReducer } from "react-router-redux";
-
-const reducer = function(initialState = {}, state) {
-  return state;
-}
-
-const store = createStore(combineReducers({
-  reducer: reducer,
-  routing: routerReducer,
-}));
+import { syncHistoryWithStore } from "react-router-redux";
+import store from "./store";
+import Home from "./Home";
 
 const history = syncHistoryWithStore(browserHistory, store)
 
@@ -24,16 +17,6 @@ class Root extends Component {
           <Route path="/" component={Home} />
         </Router>
       </Provider>
-    );
-  }
-}
-
-class Home extends Component {
-  render() {
-    return (
-      <div>
-        <p>Hello World</p>
-      </div>
     );
   }
 }
