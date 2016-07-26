@@ -4,5 +4,5 @@
     <p class=header-text>Test your reactions against your friends</p>
   </div>
 
-  <%= link("Join Game", to: game_path(@conn, :index)) %>
+  <%= link("Join Game", to: game_path(@conn, :create)) %>
 </div>
