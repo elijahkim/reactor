@@ -4,37 +4,5 @@
     <p class=header-text>Test your reactions against your friends</p>
   </div>
 
-  <div class=table-container>
-    <table class=table>
-      <thead class=thead>
-        <tr>
-          <td><h4>Room #</h4></td>
-          <td><h4># of Players</h4></td>
-          <td><h4>Link</h4></td>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>3</td>
-          <td>Link</td>
-        </tr>
-        <tr>
-          <td>1</td>
-          <td>3</td>
-          <td>Link</td>
-        </tr>
-        <tr>
-          <td>1</td>
-          <td>3</td>
-          <td>Link</td>
-        </tr>
-        <tr>
-          <td>1</td>
-          <td>3</td>
-          <td>Link</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <%= link("Join Game", to: game_path(@conn, :index)) %>
 </div>

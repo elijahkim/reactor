@@ -1,2 +1,2 @@
 import "phoenix_html";
-import "./root";
+import "./game";
