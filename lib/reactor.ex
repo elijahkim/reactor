@@ -14,6 +14,8 @@ defmodule Reactor do
       supervisor(Reactor.Endpoint, []),
       # Start your own worker by calling: Reactor.Worker.start_link(arg1, arg2, arg3)
       # worker(Reactor.Worker, [arg1, arg2, arg3]),
+      worker(Reactor.GameManager, []),
+      supervisor(Reactor.GameSupervisor, []),
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
