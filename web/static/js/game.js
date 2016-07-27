@@ -13,6 +13,7 @@ class Game extends Component {
     this.state = {
       connected: false,
       messages: [],
+      users: [],
     }
   }
 
@@ -37,6 +38,10 @@ class Game extends Component {
 
       this.setState({messages: concat(messages, msg.message)})
     });
+
+    channel.on("new:user_update", (users) => {
+      this.setState({users: users.users})
+    })
   }
 
   renderMessages(messages) {
@@ -47,8 +52,16 @@ class Game extends Component {
     return html;
   }
 
+  renderUsers(users) {
+    const html = map(users, (user, index) => {
+      return <p key={index}>{user}</p>
+    })
+
+    return html;
+  }
+
   render() {
-    const { messages } = this.state;
+    const { messages, users } = this.state;
 
     return (
       <div>
@@ -62,6 +75,10 @@ class Game extends Component {
 
         <div>
           { this.renderMessages(messages) }
+        </div>
+
+        <div>
+          { this.renderUsers(users) }
         </div>
       </div>
     );
