@@ -51,6 +51,6 @@ defmodule Reactor.GameManager do
   end
 
   def handle_call({:get_games}, _from, %{games: games} = state) do
-    {:reply, games, state}
+    {:reply, {:ok, games}, state}
   end
 end
