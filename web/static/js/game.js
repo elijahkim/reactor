@@ -5,6 +5,7 @@ import store from "./store";
 import { Socket } from "phoenix"
 import map from "lodash/map";
 import concat from "lodash/concat";
+import qs from "qs";
 
 class Game extends Component {
   constructor(props) {
@@ -19,6 +20,8 @@ class Game extends Component {
 
   componentDidMount() {
     const game_id = window.location.pathname.split("/")[2];
+    const user = qs.parse(window.location.search.split("?")[1])["name"];
+
     let socket = new Socket("/socket", {
       logger: ((kind, msg, data) => { console.log(`${kind}: ${msg}, ${data}`) })
     });
@@ -28,7 +31,7 @@ class Game extends Component {
     socket.onError((e) => console.log("Error:", e))
     socket.onClose((e) => console.log("Close:", e))
 
-    let channel = socket.channel(`game:${game_id}`, {user: "user"})
+    let channel = socket.channel(`game:${game_id}`, {user: user})
     channel.join()
       .receive("ignore", () => console.log("auth error"))
       .receive("ok", () => this.setState({connected: true}))
