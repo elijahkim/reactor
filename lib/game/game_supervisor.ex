@@ -1,6 +1,6 @@
 defmodule Reactor.GameSupervisor do
   use Supervisor
-  @name Reactor.GameSupervisor
+  @name __MODULE__
 
   ##client API
 
