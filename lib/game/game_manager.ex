@@ -13,7 +13,7 @@ defmodule Reactor.GameManager do
     |> create_game
   end
 
-  defp create_game(id) do
+  def create_game(id) do
     GenServer.call(@name, {:add_game, id})
   end
 
@@ -29,16 +29,16 @@ defmodule Reactor.GameManager do
     {:ok, state}
   end
 
-  def handle_call({:add_game, id},_, state) do
+  def handle_call({:add_game, id}, _from, state) do
     {:ok, pid} = Reactor.GameSupervisor.create_game
     {
       :reply,
-      %{id => pid},
+      {id, pid},
       put_in(state, [:games, id], pid)
     }
   end
 
-  def handle_call({:get_games},_, state) do
+  def handle_call({:get_games}, _from, state) do
     {:reply, state.games, state}
   end
 end
