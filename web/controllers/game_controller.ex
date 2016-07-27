@@ -6,7 +6,7 @@ defmodule Reactor.GameController do
   end
 
   def new(conn, _params) do
-    {id, pid} = Reactor.GameManager.create_game
+    {id, _pid} = Reactor.GameManager.create_game
 
     redirect(conn, to: game_path(conn, :show, id))
   end
