@@ -17,7 +17,7 @@ defmodule Reactor.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
-    resources "/games", GameController, only: [:index]
+    resources "/games", GameController, only: [:index, :new, :show]
   end
 
   # Other scopes may use custom stacks.
