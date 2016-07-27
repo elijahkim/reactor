@@ -22,6 +22,6 @@ defmodule Reactor.Game do
   end
 
   def handle_cast({:add_user, user}, state) do
-    {:noreply, put_in(state, [:users, user], %{score: 0})}
+    {:noreply, put_in(state, [:users, user], %{name: user, score: 0})}
   end
 end

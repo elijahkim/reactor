@@ -28,7 +28,7 @@ class Game extends Component {
     socket.onError((e) => console.log("Error:", e))
     socket.onClose((e) => console.log("Close:", e))
 
-    let channel = socket.channel(`game:${game_id}`, {})
+    let channel = socket.channel(`game:${game_id}`, {user: "user"})
     channel.join()
       .receive("ignore", () => console.log("auth error"))
       .receive("ok", () => this.setState({connected: true}))
@@ -39,8 +39,8 @@ class Game extends Component {
       this.setState({messages: concat(messages, msg.message)})
     });
 
-    channel.on("new:user_update", (users) => {
-      this.setState({users: users.users})
+    channel.on("new:user_update", (msg) => {
+      this.setState({users: msg.users})
     })
   }
 
@@ -54,7 +54,7 @@ class Game extends Component {
 
   renderUsers(users) {
     const html = map(users, (user, index) => {
-      return <p key={index}>{user}</p>
+      return <p key={index}>{user.name}</p>
     })
 
     return html;
