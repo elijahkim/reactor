@@ -4,5 +4,9 @@
     <p class=header-text>Test your reactions against your friends</p>
   </div>
 
-  <%= link("Join Game", to: game_path(@conn, :new)) %>
+  <%= form_for @conn, game_path(@conn, :create), [as: :game], fn f -> %>
+    <%= label f, :name %>
+    <%= text_input f, :name %>
+    <%= submit "Create" %>
+  <% end %>
 </div>

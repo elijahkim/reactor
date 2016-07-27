@@ -5,10 +5,10 @@ defmodule Reactor.GameController do
     render(conn, "index.html")
   end
 
-  def new(conn, _params) do
+  def create(conn, %{"game" => %{"name" => name}} = params) do
     {id, _pid} = Reactor.GameManager.create_game
 
-    redirect(conn, to: game_path(conn, :show, id))
+    redirect(conn, to: game_path(conn, :show, id, name: name))
   end
 
   def show(conn, %{"id" => id}) do
