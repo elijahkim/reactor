@@ -3,6 +3,8 @@ import { Provider } from "react-redux";
 import ReactDOM from "react-dom";
 import store from "./store";
 import { Socket } from "phoenix"
+import map from "lodash/map";
+import concat from "lodash/concat";
 
 class Game extends Component {
   constructor(props) {
@@ -10,10 +12,12 @@ class Game extends Component {
 
     this.state = {
       connected: false,
+      messages: [],
     }
   }
 
   componentDidMount() {
+    const game_id = window.location.pathname.split("/")[2];
     let socket = new Socket("/socket", {
       logger: ((kind, msg, data) => { console.log(`${kind}: ${msg}, ${data}`) })
     });
@@ -23,37 +27,43 @@ class Game extends Component {
     socket.onError((e) => console.log("Error:", e))
     socket.onClose((e) => console.log("Close:", e))
 
-    let channel = socket.channel("game", {})
+    let channel = socket.channel(`game:${game_id}`, {})
     channel.join()
       .receive("ignore", () => console.log("auth error"))
       .receive("ok", () => this.setState({connected: true}))
+
+    channel.on("new:message", (msg) => {
+      const { messages } = this.state;
+
+      this.setState({messages: concat(messages, msg.message)})
+    });
   }
 
-  renderWelcomeMessage() {
-    if (this.state.connected) {
-      return (
-        <div>
-          <p>Welcome</p>
-        </div>
-      );
-    }
+  renderMessages(messages) {
+    const html = map(messages, (message, index) => {
+      return <p key={index}>{message}</p>
+    })
+
+    return html;
   }
 
   render() {
+    const { messages } = this.state;
+
     return (
-      <Provider store={store}>
+      <div>
         <div>
-          <div>
-            <h1>Welcome</h1>
-          </div>
-
-          <div>
-            <p>Hello world</p>
-          </div>
-
-          { this.renderWelcomeMessage() }
+          <h1>Welcome</h1>
         </div>
-      </Provider>
+
+        <div>
+          <p>Hello world</p>
+        </div>
+
+        <div>
+          { this.renderMessages(messages) }
+        </div>
+      </div>
     );
   }
 }

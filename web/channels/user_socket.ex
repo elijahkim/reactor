@@ -2,7 +2,7 @@ defmodule Reactor.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  channel "game", Reactor.GameChannel
+  channel "game:*", Reactor.GameChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket

@@ -8,8 +8,8 @@ defmodule Reactor.GameSupervisor do
     Supervisor.start_link(@name, :ok, name: @name)
   end
 
-  def create_game do
-    Supervisor.start_child(@name, [])
+  def create_game(name) do
+    Supervisor.start_child(@name, [name])
   end
 
   ##server callbacks
