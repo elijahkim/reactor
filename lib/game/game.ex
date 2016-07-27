@@ -17,11 +17,13 @@ defmodule Reactor.Game do
     {:ok, state}
   end
 
-  def handle_call({:get_users}, _from, state) do
-    {:reply, {:ok, state.users}, state}
+  def handle_call({:get_users}, _from, %{users: users} = state) do
+    {:reply, {:ok, users}, state}
   end
 
-  def handle_cast({:add_user, user}, state) do
-    {:noreply, put_in(state, [:users, user], %{name: user, score: 0})}
+  def handle_call({:add_user, user}, _from, %{users: users} = state) do
+    users = Map.put(users, user, %{name: user, score: 0})
+
+    {:reply, {:ok, users}, Map.put(state, :users, users)}
   end
 end

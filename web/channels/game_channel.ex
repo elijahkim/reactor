@@ -7,9 +7,10 @@ defmodule Reactor.GameChannel do
   end
 
   def join("game:" <> game_id, %{"user" => user} = message, socket) do
-    Reactor.GameManager.add_user_to_game(game_id, user)
+    {:ok, users} = Reactor.GameManager.add_user_to_game(game_id, user)
+
     send(self, {:after_join, message})
-    send(self, {:user_update, game_id, message})
+    send(self, {:user_update, users})
 
     {:ok, socket}
   end
@@ -20,10 +21,8 @@ defmodule Reactor.GameChannel do
     {:noreply, socket}
   end
 
-  def handle_info({:user_update, game_id, message}, socket) do
-    {:ok, users} = Reactor.GameManager.get_users(game_id)
+  def handle_info({:user_update, users}, socket) do
     broadcast(socket, "new:user_update", %{users: users})
-
     {:noreply, socket}
   end
 end

@@ -23,17 +23,17 @@ defmodule Reactor.GameManager do
 
   def get_users(game_id) do
     game_id
-    |> to_reg
+    |> to_ref
     |> GenServer.call({:get_users})
   end
 
   def add_user_to_game(game_id, user) do
     game_id
-    |> to_reg
-    |> GenServer.cast({:add_user, user})
+    |> to_ref
+    |> GenServer.call({:add_user, user})
   end
 
-  def to_reg(id) do
+  def to_ref(id) do
     :"game-#{id}"
   end
 
@@ -46,15 +46,11 @@ defmodule Reactor.GameManager do
   end
 
   def handle_call({:add_game, id}, _from, state) do
-    {:ok, pid} = Reactor.GameSupervisor.create_game(to_reg(id))
+    {:ok, pid} = Reactor.GameSupervisor.create_game(to_ref(id))
     {:reply, {id, pid}, put_in(state, [:games, id], pid)}
   end
 
-  def handle_call({:get_games}, _from, state) do
-    {:reply, state.games, state}
-  end
-
-  def handle_call({:get_game, id}, _from, state) do
-    {:reply, Map.fetch(state.games, id), state}
+  def handle_call({:get_games}, _from, %{games: games} = state) do
+    {:reply, games, state}
   end
 end
