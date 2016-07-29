@@ -50,7 +50,7 @@ defmodule Reactor.GameChannel do
     socket =
       socket
       |> assign(:user, user)
-      |> assign(socket, :game_id, game_id)
+      |> assign(:game_id, game_id)
 
     {:ok, users} = GameManager.add_user_to_game(game_id, user)
 
