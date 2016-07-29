@@ -1,1 +1,14 @@
 <p>Hello</p>
+
+<%= for game <- @games do %>
+  <div>
+    <%= link("Join #{game}", to: game_path(@conn, :show, game, user: @user)) %>
+  </div>
+<% end %>
+
+<%= form_for @conn, game_path(@conn, :create), [as: :game], fn f -> %>
+  <%= label f, :name %>
+  <%= text_input f, :name %>
+
+  <%= submit "Create" %>
+<% end %>

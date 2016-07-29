@@ -4,15 +4,14 @@
     <p class=header-text>Test your reactions against your friends</p>
   </div>
 
-  <%= form_for @conn, game_path(@conn, :create), [as: :game], fn f -> %>
-    <%= label f, :name %>
-    <%= text_input f, :name %>
-    <%= submit "Create" %>
-  <% end %>
+  <div>
+    <h2>Sign in</h2>
 
-  <%= for game <- @games do %>
-    <div>
-      <%= link("Join #{game}", to: game_path(@conn, :show, game, name: "guest")) %>
-    </div>
-  <% end %>
+    <%= form_for @conn, user_path(@conn, :create), [as: :user], fn f -> %>
+      <%= label f, :name %>
+      <%= text_input f, :name %>
+
+      <%= submit "Join" %>
+    <% end %>
+  </div>
 </div>

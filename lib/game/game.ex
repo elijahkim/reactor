@@ -27,7 +27,7 @@ defmodule Reactor.Game do
     {:reply, {:ok, users}, Map.put(state, :users, users)}
   end
 
-  def handle_call({:remove_user, user},_from, state) do
+  def handle_call({:remove_user, user}, _from, state) do
     {_, %{users: users} = state} = pop_in(state, [:users, user])
 
     {:reply, {:ok, users}, state}
