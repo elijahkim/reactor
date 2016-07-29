@@ -9,4 +9,10 @@
     <%= text_input f, :name %>
     <%= submit "Create" %>
   <% end %>
+
+  <%= for game <- @games do %>
+    <div>
+      <%= link("Join #{game}", to: game_path(@conn, :show, game, name: "guest")) %>
+    </div>
+  <% end %>
 </div>

@@ -2,11 +2,13 @@ defmodule Reactor.GameManagerTest do
   use ExUnit.Case, async: true
 
   test "can create and get games" do
-    assert Enum.count(Reactor.GameManager.get_games) == 0
+    {:ok, games} = Reactor.GameManager.get_games
+    assert Enum.count(games) == 0
 
     {id, pid} = Reactor.GameManager.create_game
 
-    assert Enum.count(Reactor.GameManager.get_games) == 1
+    {:ok, games} = Reactor.GameManager.get_games
+    assert Enum.count(games) == 1
     assert Enum.take(Reactor.GameManager.get_games, 1) == [{id, pid}]
   end
 
@@ -18,5 +20,16 @@ defmodule Reactor.GameManagerTest do
     {:ok, users} = Reactor.GameManager.add_user_to_game(id, "User")
 
     assert Enum.count(users) == 1
+  end
+
+  test "removes users from games" do
+    {id, pid} = Reactor.GameManager.create_game
+    Reactor.GameManager.add_user_to_game(id, "User")
+    {:ok, users} = Reactor.GameManager.get_users(id)
+    assert Enum.count(users) == 1
+
+    {:ok, users} = Reactor.GameManager.remove_user_from_game(id, "User")
+
+    assert Enum.count(users) == 0
   end
 end
