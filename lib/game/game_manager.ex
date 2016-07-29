@@ -33,6 +33,12 @@ defmodule Reactor.GameManager do
     |> GenServer.call({:add_user, user})
   end
 
+  def remove_user_from_game(game_id, user) do
+    game_id
+    |> to_ref
+    |> GenServer.call({:remove_user, user})
+  end
+
   def to_ref(id) do
     :"game-#{id}"
   end
