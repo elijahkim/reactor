@@ -1,12 +1,15 @@
 defmodule Reactor.GameChannel do
   use Phoenix.Channel
+  alias Reactor.GameManager
   require Logger
 
   def join("game", _message, socket) do
     {:ok, socket}
   end
 
-  def join("game:" <> game_id, %{"user" => user} = message, socket) do
+  def join("game:" <> game_id, message, socket) do
+    user = socket.assigns.user
+
     {:ok, users, socket} = add_user_and_game(%{game_id: game_id, user: user}, socket)
 
     send(self, {:after_join, message})
@@ -19,7 +22,7 @@ defmodule Reactor.GameChannel do
     user = socket.assigns.user
     game_id = socket.assigns.game_id
 
-    {:ok, users} = Reactor.GameManager.remove_user_from_game(game_id, user)
+    {:ok, users} = GameManager.remove_user_from_game(game_id, user)
     broadcast(socket, "new:user_update", %{users: users})
     :ok
   end
@@ -38,7 +41,7 @@ defmodule Reactor.GameChannel do
   defp add_user_and_game(%{game_id: game_id, user: user}, socket) do
     socket = assign(socket, :user, user)
     socket = assign(socket, :game_id, game_id)
-    {:ok, users} = Reactor.GameManager.add_user_to_game(game_id, user)
+    {:ok, users} = GameManager.add_user_to_game(game_id, user)
 
     {:ok, users, socket}
   end

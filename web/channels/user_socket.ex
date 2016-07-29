@@ -19,7 +19,8 @@ defmodule Reactor.UserSocket do
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
-  def connect(_params, socket) do
+  def connect(%{"user" => user}, socket) do
+    socket = assign(socket, :user, user)
     {:ok, socket}
   end
 

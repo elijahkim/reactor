@@ -20,13 +20,13 @@ class Game extends Component {
 
   componentDidMount() {
     const game_id = window.location.pathname.split("/")[2];
-    const user = qs.parse(window.location.search.split("?")[1])["name"];
+    const user = qs.parse(window.location.search.split("?")[1])["user"];
 
     let socket = new Socket("/socket", {
       logger: ((kind, msg, data) => { console.log(`${kind}: ${msg}, ${data}`) })
     });
 
-    socket.connect({user_id: "123"});
+    socket.connect({user: user});
     socket.onOpen((e) => console.log("Open:", e))
     socket.onError((e) => console.log("Error:", e))
     socket.onClose((e) => console.log("Close:", e))

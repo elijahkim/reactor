@@ -18,6 +18,7 @@ defmodule Reactor.Router do
 
     get "/", PageController, :index
     resources "/games", GameController, only: [:index, :create, :show]
+    resources "/users", UserController, only: [:create]
   end
 
   # Other scopes may use custom stacks.
