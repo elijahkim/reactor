@@ -1,0 +1,39 @@
+#react-app-game {
+  width: 100%;
+  height: 100%;
+}
+
+.game__container {
+  display: flex;
+  flex: 1;
+  height: 100%;
+  background-color: $off-white;
+}
+
+.game__colors-container {
+  display: flex;
+  flex: 1;
+}
+
+.game__chat-container {
+  display: flex;
+  align-items: space-around;
+  flex-direction: column;
+  flex-grow: 10;
+}
+
+.game__sidebar-container {
+  width: 20em;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.game__messages-container {
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  justify-content: flex-end;
+  flex-direction: column;
+  overflow-x: scroll;
+}

@@ -4,6 +4,7 @@ import ReactDOM from "react-dom";
 import store from "./store";
 import { Socket } from "phoenix"
 import map from "lodash/map";
+import join from "lodash/join";
 import concat from "lodash/concat";
 import qs from "qs";
 
@@ -63,37 +64,32 @@ class Game extends Component {
   }
 
   renderUsers(users) {
-    const html = map(users, (user, index) => {
-      return <p key={index}>{user.name}</p>
-    })
-
-    return html;
+    const joinedUsers = join(map(users, "name"), ", ")
+    return <p>{ joinedUsers }</p>;
   }
 
   render() {
     const { messages, users } = this.state;
 
     return (
-      <div>
-        <div>
-          <h1>Welcome</h1>
+      <div className="game__container">
+        <div className="game__colors-container">
+          <p>placeholder</p>
         </div>
 
-        <div>
-          <p>Hello world</p>
+        <div className="game__sidebar-container">
+          <div className="game__users-container">
+            { this.renderUsers(users) }
+          </div>
+          <div className="game__chat-container">
+            <div className="game__messages-container">
+              { this.renderMessages(messages) }
+            </div>
+            <button onClick={(e) => this.handleReadySubmission(e)}>
+              Ready
+            </button>
+          </div>
         </div>
-
-        <div>
-          { this.renderMessages(messages) }
-        </div>
-
-        <div>
-          { this.renderUsers(users) }
-        </div>
-
-        <button onClick={(e) => this.handleReadySubmission(e)}>
-          Ready
-        </button>
       </div>
     );
   }
