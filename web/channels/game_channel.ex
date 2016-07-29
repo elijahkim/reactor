@@ -8,7 +8,7 @@ defmodule Reactor.GameChannel do
   end
 
   def join("game:" <> game_id, message, socket) do
-    user = socket.assigns.user
+    %{user: user} = socket.assigns
 
     {:ok, users, socket} = add_user_and_game(%{game_id: game_id, user: user}, socket)
 
@@ -19,12 +19,20 @@ defmodule Reactor.GameChannel do
   end
 
   def terminate(reason, socket) do
-    user = socket.assigns.user
-    game_id = socket.assigns.game_id
+    %{user: user, game_id: game_id} = socket.assigns
 
     {:ok, users} = GameManager.remove_user_from_game(game_id, user)
     broadcast(socket, "new:user_update", %{users: users})
     :ok
+  end
+
+  def handle_in("new:user_ready", msg, socket) do
+    %{user: user, game_id: game_id} = socket.assigns
+
+    {:ok, %{name: name}} = GameManager.ready_user(game_id, user)
+
+    broadcast(socket, "new:message", %{message: "#{name} is ready"})
+    {:noreply, socket}
   end
 
   def handle_info({:after_join, message}, socket) do
@@ -39,8 +47,11 @@ defmodule Reactor.GameChannel do
   end
 
   defp add_user_and_game(%{game_id: game_id, user: user}, socket) do
-    socket = assign(socket, :user, user)
-    socket = assign(socket, :game_id, game_id)
+    socket =
+      socket
+      |> assign(:user, user)
+      |> assign(socket, :game_id, game_id)
+
     {:ok, users} = GameManager.add_user_to_game(game_id, user)
 
     {:ok, users, socket}

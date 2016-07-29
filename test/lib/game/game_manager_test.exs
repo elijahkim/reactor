@@ -1,35 +1,47 @@
 defmodule Reactor.GameManagerTest do
   use ExUnit.Case, async: true
+  alias Reactor.GameManager
 
   test "can create and get games" do
-    {:ok, games} = Reactor.GameManager.get_games
+    {:ok, games} = GameManager.get_games
     assert Enum.count(games) == 0
 
-    {id, pid} = Reactor.GameManager.create_game
+    {id, pid} = GameManager.create_game
 
-    {:ok, games} = Reactor.GameManager.get_games
+    {:ok, games} = GameManager.get_games
     assert Enum.count(games) == 1
-    assert Enum.take(Reactor.GameManager.get_games, 1) == [{id, pid}]
+    assert Enum.take(GameManager.get_games, 1) == [{id, pid}]
   end
 
   test "adds users to games" do
-    {id, pid} = Reactor.GameManager.create_game
-    {:ok, users} = Reactor.GameManager.get_users(id)
+    {id, _pid} = GameManager.create_game
+    {:ok, users} = GameManager.get_users(id)
     assert Enum.count(users) == 0
 
-    {:ok, users} = Reactor.GameManager.add_user_to_game(id, "User")
+    {:ok, users} = GameManager.add_user_to_game(id, "User")
 
     assert Enum.count(users) == 1
   end
 
   test "removes users from games" do
-    {id, pid} = Reactor.GameManager.create_game
-    Reactor.GameManager.add_user_to_game(id, "User")
-    {:ok, users} = Reactor.GameManager.get_users(id)
+    {id, _pid} = GameManager.create_game
+    GameManager.add_user_to_game(id, "User")
+    {:ok, users} = GameManager.get_users(id)
     assert Enum.count(users) == 1
 
-    {:ok, users} = Reactor.GameManager.remove_user_from_game(id, "User")
+    {:ok, users} = GameManager.remove_user_from_game(id, "User")
 
     assert Enum.count(users) == 0
+  end
+
+  test "readys users on games" do
+    {id, _pid} = GameManager.create_game
+    GameManager.add_user_to_game(id, "User")
+    {:ok, %{"User" => user}} = GameManager.get_users(id)
+    assert user.ready == false
+
+    {:ok, user} = GameManager.ready_user(id, "User")
+
+    assert user.ready == true
   end
 end

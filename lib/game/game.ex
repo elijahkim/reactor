@@ -22,7 +22,7 @@ defmodule Reactor.Game do
   end
 
   def handle_call({:add_user, user}, _from, %{users: users} = state) do
-    users = Map.put(users, user, %{name: user, score: 0})
+    users = Map.put(users, user, %{name: user, score: 0, ready: false})
 
     {:reply, {:ok, users}, Map.put(state, :users, users)}
   end
@@ -31,5 +31,12 @@ defmodule Reactor.Game do
     {_, %{users: users} = state} = pop_in(state, [:users, user])
 
     {:reply, {:ok, users}, state}
+  end
+
+  def handle_call({:ready_user, user}, _from, state) do
+    state = put_in(state, [:users, user, :ready], true)
+    %{users: %{^user => user}} = state
+
+    {:reply, {:ok, user}, state}
   end
 end

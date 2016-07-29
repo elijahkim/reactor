@@ -31,20 +31,27 @@ class Game extends Component {
     socket.onError((e) => console.log("Error:", e))
     socket.onClose((e) => console.log("Close:", e))
 
-    let channel = socket.channel(`game:${game_id}`, {user: user})
-    channel.join()
+    this.channel = socket.channel(`game:${game_id}`, {user: user})
+    this.channel.join()
       .receive("ignore", () => console.log("auth error"))
       .receive("ok", () => this.setState({connected: true}))
 
-    channel.on("new:message", (msg) => {
+    this.channel.on("new:message", (msg) => {
       const { messages } = this.state;
 
       this.setState({messages: concat(messages, msg.message)})
     });
 
-    channel.on("new:user_update", (msg) => {
+    this.channel.on("new:user_update", (msg) => {
       this.setState({users: msg.users})
     })
+  }
+
+  handleReadySubmission(e) {
+    e.preventDefault();
+    const user = qs.parse(window.location.search.split("?")[1])["user"];
+
+    this.channel.push("new:user_ready", {user: user});
   }
 
   renderMessages(messages) {
@@ -83,6 +90,10 @@ class Game extends Component {
         <div>
           { this.renderUsers(users) }
         </div>
+
+        <button onClick={(e) => this.handleReadySubmission(e)}>
+          Ready
+        </button>
       </div>
     );
   }
