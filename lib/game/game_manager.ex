@@ -45,6 +45,18 @@ defmodule Reactor.GameManager do
     |> GenServer.call({:ready_user, user})
   end
 
+  def start_round(game_id) do
+    game_id
+    |> to_ref
+    |> GenServer.cast({:start_round})
+  end
+
+  def get_current_round(game_id) do
+    game_id
+    |> to_ref
+    |> GenServer.call({:current_round})
+  end
+
   def to_ref(id) do
     :"game-#{id}"
   end

@@ -1,7 +1,7 @@
 defmodule Reactor.Game do
   use GenServer
 
-  ##client API
+  ##Client API
 
   def start_link(name) do
     GenServer.start_link(__MODULE__, :ok, name: name)
@@ -11,7 +11,8 @@ defmodule Reactor.Game do
 
   def init(:ok) do
     state = %{
-      users: %{}
+      users: %{},
+      current_round: nil,
     }
 
     {:ok, state}
@@ -38,5 +39,15 @@ defmodule Reactor.Game do
     %{users: %{^user => user}} = state
 
     {:reply, {:ok, user}, state}
+  end
+
+  def handle_cast({:start_round}, %{users: users} = state) do
+    {:ok, pid} = Reactor.Game.Round.start_link(Enum.map(users, &(&1.name)))
+    {:noreply, put_in(state, [:current_round], pid)}
+  end
+
+  def handle_call({:current_round}, _from, %{current_round: current_round} = state) do
+
+    {:reply, {:ok, current_round}, state}
   end
 end
