@@ -74,7 +74,23 @@ class Game extends Component {
     return (
       <div className="game__container">
         <div className="game__colors-container">
-          <p>placeholder</p>
+          <div className="game__color-instruction-container">
+            <h1 className="game__color-instruction-text">
+              Green
+            </h1>
+          </div>
+          <div className="game__colors-row">
+            <button className="game__color-block blue">
+            </button>
+            <button className="game__color-block red">
+            </button>
+          </div>
+          <div className="game__colors-row">
+            <button className="game__color-block green">
+            </button>
+            <button className="game__color-block yellow">
+            </button>
+          </div>
         </div>
 
         <div className="game__sidebar-container">
@@ -85,10 +101,14 @@ class Game extends Component {
             <div className="game__messages-container">
               { this.renderMessages(messages) }
             </div>
-            <button onClick={(e) => this.handleReadySubmission(e)}>
-              Ready
-            </button>
+
           </div>
+          <button
+            onClick={(e) => this.handleReadySubmission(e)}
+            type="button"
+          >
+            Ready
+          </button>
         </div>
       </div>
     );

@@ -1,5 +1,16 @@
 /* This file is for your main application css. */
 
+$dark-gray: #A9A9A9;
+$blue: #60DFE5;
+$orange: #FF7F50;
+$off-white: #FEFCFF;
+
+$base-spacing: 1em;
+$small-spacing: $base-spacing / 3;
+
+$base-border: 1px solid $dark-gray;
+$base-border-radius: 3px;
+
 html {
   height: 100%;
   width: 100%;
@@ -14,9 +25,21 @@ body {
   margin: 0;
 }
 
-$blue: #60DFE5;
-$orange: #FF7F50;
-$off-white: #FEFCFF;
+button {
+  display: inline-block;
+  margin: $base-spacing;
+  padding: $small-spacing;
+  font-family: "Roboto", sans-serif;
+  font-size: 1em;
+  appearance: none;
+  box-shadow: none;
+  border-radius: $base-border-radius;
+}
+
+p {
+  font-family: "Roboto", sans-serif;
+  margin: $small-spacing;
+}
 
 .container {
   display: flex;
@@ -31,7 +54,7 @@ $off-white: #FEFCFF;
 .header-container {
   width: 100%;
   text-align: center;
-  padding: 1em;
+  padding: $base-spacing;
 }
 
 .header-header {

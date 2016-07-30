@@ -10,9 +10,21 @@
   background-color: $off-white;
 }
 
+.game__color-instruction-container {
+  height: 5em;
+  padding: $small-spacing;
+  text-align: center;
+}
+
 .game__colors-container {
   display: flex;
+  flex-direction: column;
   flex: 1;
+}
+
+.game__colors-row {
+  display: flex;
+  flex: 5;
 }
 
 .game__chat-container {
@@ -20,13 +32,23 @@
   align-items: space-around;
   flex-direction: column;
   flex-grow: 10;
+  border-top: $base-border;
+  border-bottom: $base-border;
+  padding: $base-spacing;
 }
 
 .game__sidebar-container {
+  background-color: $off-white;
+  border-left: $base-border;
   width: 20em;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+.game__users-container {
+  padding: $small-spacing;
+  height: 5em;
 }
 
 .game__messages-container {
@@ -36,4 +58,31 @@
   justify-content: flex-end;
   flex-direction: column;
   overflow-x: scroll;
+}
+
+.game__color-block {
+  display: flex;
+  flex: 1;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  &:focus {
+    outline: none;
+  }
+}
+
+.blue {
+  background-color: blue;
+}
+
+.red {
+  background-color: red;
+}
+
+.green {
+  background-color: green;
+}
+
+.yellow {
+  background-color: yellow;
 }
