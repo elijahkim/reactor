@@ -3,6 +3,10 @@ defmodule Reactor.GameChannel do
   alias Reactor.GameManager
   require Logger
 
+  def broadcast_new_round(topic, msg) do
+    Reactor.Endpoint.broadcast("game:#{topic}", "new:round", msg)
+  end
+
   def join("game", _message, socket) do
     {:ok, socket}
   end
@@ -33,6 +37,13 @@ defmodule Reactor.GameChannel do
 
     broadcast(socket, "new:message", %{message: "#{name} is ready"})
     {:noreply, socket}
+  end
+
+  def handle_in("start_game", msg, socket) do
+   %{game_id: game_id} = socket.assigns
+   GameManager.start_game(game_id)
+
+   {:noreply, socket}
   end
 
   def handle_info({:after_join, message}, socket) do

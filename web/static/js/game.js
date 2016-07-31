@@ -52,7 +52,7 @@ class Game extends Component {
     e.preventDefault();
     const user = qs.parse(window.location.search.split("?")[1])["user"];
 
-    this.channel.push("new:user_ready", {user: user});
+    this.channel.push("start_game", {user: user});
   }
 
   renderMessages(messages) {
