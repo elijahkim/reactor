@@ -73,24 +73,24 @@ class Game extends Component {
     return <p>{ joinedUsers }</p>;
   }
 
-  renderColors(colors) {
+  renderColors(colors, instruction) {
     return (
       <div className="game__colors-container">
         <div className="game__color-instruction-container">
           <h1 className="game__color-instruction-text">
-            Green
+            { instruction.toUpperCase() }
           </h1>
         </div>
         <div className="game__colors-row">
-          <button className="game__color-block blue">
+          <button className={`game__color-block ${colors[0]}`}>
           </button>
-          <button className="game__color-block red">
+          <button className={`game__color-block ${colors[1]}`}>
           </button>
         </div>
         <div className="game__colors-row">
-          <button className="game__color-block green">
+          <button className={`game__color-block ${colors[2]}`}>
           </button>
-          <button className="game__color-block yellow">
+          <button className={`game__color-block ${colors[3]}`}>
           </button>
         </div>
       </div>
@@ -114,11 +114,11 @@ class Game extends Component {
   }
 
   render() {
-    const { messages, users, colors, state } = this.state;
+    const { messages, users, colors, state, instruction } = this.state;
 
     return (
       <div className="game__container">
-        { state == "in_progress" ? this.renderColors(colors) : this.renderWaiting() }
+        { state == "in_progress" ? this.renderColors(colors, instruction) : this.renderWaiting() }
 
         <div className="game__sidebar-container">
           <div className="game__users-container">
