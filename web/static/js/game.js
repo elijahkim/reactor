@@ -16,6 +16,7 @@ class Game extends Component {
       connected: false,
       messages: [],
       users: [],
+      state: null,
     }
   }
 
@@ -44,7 +45,11 @@ class Game extends Component {
     });
 
     this.channel.on("new:user_update", (msg) => {
-      this.setState({users: msg.users})
+      this.setState({users: msg.users});
+    })
+
+    this.channel.on("new:round", (msg) => {
+      this.setState(Object.assign({}, msg, { state: "in_progress" }))
     })
   }
 
@@ -68,30 +73,52 @@ class Game extends Component {
     return <p>{ joinedUsers }</p>;
   }
 
+  renderColors(colors) {
+    return (
+      <div className="game__colors-container">
+        <div className="game__color-instruction-container">
+          <h1 className="game__color-instruction-text">
+            Green
+          </h1>
+        </div>
+        <div className="game__colors-row">
+          <button className="game__color-block blue">
+          </button>
+          <button className="game__color-block red">
+          </button>
+        </div>
+        <div className="game__colors-row">
+          <button className="game__color-block green">
+          </button>
+          <button className="game__color-block yellow">
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  renderWaiting() {
+    return (
+      <div className="game__colors-container">
+        <div className="game__color-instruction-container">
+          <h1 className="game__color-instruction-text">
+            Waiting for round to begin
+          </h1>
+        </div>
+        <div className="game__colors-row">
+        </div>
+        <div className="game__colors-row">
+        </div>
+      </div>
+    )
+  }
+
   render() {
-    const { messages, users } = this.state;
+    const { messages, users, colors, state } = this.state;
 
     return (
       <div className="game__container">
-        <div className="game__colors-container">
-          <div className="game__color-instruction-container">
-            <h1 className="game__color-instruction-text">
-              Green
-            </h1>
-          </div>
-          <div className="game__colors-row">
-            <button className="game__color-block blue">
-            </button>
-            <button className="game__color-block red">
-            </button>
-          </div>
-          <div className="game__colors-row">
-            <button className="game__color-block green">
-            </button>
-            <button className="game__color-block yellow">
-            </button>
-          </div>
-        </div>
+        { state == "in_progress" ? this.renderColors(colors) : this.renderWaiting() }
 
         <div className="game__sidebar-container">
           <div className="game__users-container">
