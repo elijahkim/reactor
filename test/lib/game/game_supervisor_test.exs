@@ -5,10 +5,9 @@ defmodule Reactor.GameSupervisorTest do
     %{workers: workers} = Supervisor.count_children(Reactor.GameSupervisor)
     assert workers == 0
 
-    {status, _pid} = Reactor.GameSupervisor.create_game
+    {:ok, _pid} = Reactor.GameSupervisor.create_game(:hello)
 
     %{workers: workers} = Supervisor.count_children(Reactor.GameSupervisor)
     assert workers == 1
-    assert status == :ok
   end
 end
