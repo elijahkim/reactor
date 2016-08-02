@@ -3,14 +3,11 @@ defmodule Reactor.GameManagerTest do
   alias Reactor.GameManager
 
   test "can create and get games" do
-    {:ok, games} = GameManager.get_games
-    assert Enum.count(games) == 0
-
     {id, pid} = GameManager.create_game
+    {:ok, %{^id => game}} = GameManager.get_games
 
-    {:ok, games} = GameManager.get_games
-    assert Enum.count(games) == 1
-    assert Enum.take(GameManager.get_games, 1) == [{id, pid}]
+    assert is_pid(pid)
+    assert is_pid(game)
   end
 
   test "adds users to games" do
@@ -43,5 +40,15 @@ defmodule Reactor.GameManagerTest do
     {:ok, user} = GameManager.ready_user(id, "User")
 
     assert user.ready == true
+  end
+
+  test "starts a round per game" do
+    {id, _pid} = GameManager.create_game
+    GameManager.add_user_to_game(id, "User")
+
+    :ok = GameManager.start_round(id)
+    {:ok, round} = GameManager.get_current_round(id)
+
+    assert is_pid(round)
   end
 end
