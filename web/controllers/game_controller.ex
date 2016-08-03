@@ -9,14 +9,14 @@ defmodule Reactor.GameController do
     render(conn, "index.html", games: Map.keys(games), user: user)
   end
 
-  def create(conn, %{"game" => %{"name" => name}} = params) do
+  def create(conn, %{"game" => %{"name" => name}}) do
     {id, _pid} = GameManager.create_game(name)
     user = get_session(conn, :user)
 
     redirect(conn, to: game_path(conn, :show, id, user: user))
   end
 
-  def show(conn, %{"id" => id}) do
+  def show(conn, _params) do
     render(conn, "show.html")
   end
 end
