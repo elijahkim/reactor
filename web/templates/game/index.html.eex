@@ -1,14 +1,22 @@
-<p>Hello</p>
+<div class="games-index__outer-container">
+  <div class="games-index__container">
+    <div class="games-index__games-container">
+      <h1>Games</h1>
+      <%= for game <- @games do %>
+        <div>
+          <%= link("Join #{game}", to: game_path(@conn, :show, game, user: @user)) %>
+        </div>
+      <% end %>
+    </div>
 
-<%= for game <- @games do %>
-  <div>
-    <%= link("Join #{game}", to: game_path(@conn, :show, game, user: @user)) %>
+    <div class="games-index__game-form-container">
+      <h3>Create Game</h3>
+      <%= form_for @conn, game_path(@conn, :create), [as: :game], fn f -> %>
+      <%= label f, :name %>
+      <%= text_input f, :name %>
+
+      <%= submit "Create" %>
+    <% end %>
+    </div>
   </div>
-<% end %>
-
-<%= form_for @conn, game_path(@conn, :create), [as: :game], fn f -> %>
-  <%= label f, :name %>
-  <%= text_input f, :name %>
-
-  <%= submit "Create" %>
-<% end %>
+</div>
