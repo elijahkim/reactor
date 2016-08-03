@@ -63,6 +63,12 @@ defmodule Reactor.GameManager do
     |> GenServer.call({:current_round})
   end
 
+  def submit_answer(game_id, user, answer) do
+    game_id
+    |> to_ref
+    |> GenServer.cast({:submit_answer, %{user: user, answer: answer}})
+  end
+
   def to_ref(id) do
     :"game-#{id}"
   end

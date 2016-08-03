@@ -60,6 +60,12 @@ class Game extends Component {
     this.channel.push("start_game", {user: user});
   }
 
+  handleClick(e, color) {
+    e.preventDefault();
+
+    this.channel.push("new:answer_submission", {submission: color});
+  }
+
   renderMessages(messages) {
     const html = map(messages, (message, index) => {
       return <p key={index}>{message}</p>
@@ -82,15 +88,27 @@ class Game extends Component {
           </h1>
         </div>
         <div className="game__colors-row">
-          <button className={`game__color-block ${colors[0]}`}>
+          <button
+            className={`game__color-block ${colors[0]}`}
+            onClick={(e) => this.handleClick(e, colors[0])}
+          >
           </button>
-          <button className={`game__color-block ${colors[1]}`}>
+          <button
+            className={`game__color-block ${colors[1]}`}
+            onClick={(e) => this.handleClick(e, colors[1])}
+          >
           </button>
         </div>
         <div className="game__colors-row">
-          <button className={`game__color-block ${colors[2]}`}>
+          <button
+            className={`game__color-block ${colors[2]}`}
+            onClick={(e) => this.handleClick(e, colors[2])}
+          >
           </button>
-          <button className={`game__color-block ${colors[3]}`}>
+          <button
+            className={`game__color-block ${colors[3]}`}
+            onClick={(e) => this.handleClick(e, colors[3])}
+          >
           </button>
         </div>
       </div>

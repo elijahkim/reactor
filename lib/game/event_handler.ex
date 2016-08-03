@@ -2,6 +2,9 @@ alias Experimental.GenStage
 
 defmodule Reactor.Game.EventHandler do
   use GenStage
+  alias Reactor.GameChannel
+  alias Reactor.GameManager
+
   @name __MODULE__
 
   def start_link() do
@@ -17,7 +20,14 @@ defmodule Reactor.Game.EventHandler do
   def handle_event({:new_round, %{game_id: game_id, colors: colors, instruction: instruction}}) do
     game_id = game_id |> String.replace_leading("game-", "")
 
-    Reactor.GameChannel.broadcast_new_round(game_id, %{colors: colors, instruction: instruction})
+    GameChannel.broadcast_new_round(game_id, %{colors: colors, instruction: instruction})
+  end
+
+  def handle_event({:winner, %{user: user, game_id: game_id}}) do
+    game_id = game_id |> String.replace_leading("game-", "")
+
+    GameChannel.broadcast_winner(game_id, %{user: user})
+    GameManager.start_round(game_id)
   end
 
   def handle_events([event|events], from, state) do
