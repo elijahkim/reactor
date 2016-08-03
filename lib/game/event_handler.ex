@@ -20,6 +20,12 @@ defmodule Reactor.Game.EventHandler do
     Reactor.GameChannel.broadcast_new_round(game_id, %{colors: colors, instruction: instruction})
   end
 
+  def handle_event({:winner, %{user: user, game_id: game_id}}) do
+    game_id = game_id |> String.replace_leading("game-", "")
+
+    Reactor.GameChannel.broadcast_winner(game_id, %{user: user})
+  end
+
   def handle_events([event|events], from, state) do
     handle_event(event)
     handle_events(events, from, state)

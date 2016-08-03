@@ -5,6 +5,10 @@ defmodule Reactor.Game.Round do
 
   ##Client API
 
+  def start(game_id, users) do
+    GenServer.start(__MODULE__, [game_id, users])
+  end
+
   def start_link(game_id, users) do
     GenServer.start_link(__MODULE__, [game_id, users])
   end
@@ -34,5 +38,14 @@ defmodule Reactor.Game.Round do
     Reactor.Game.EventManager.fire_event({:new_round, state})
 
     {:noreply, state}
+  end
+
+  def handle_cast({:submit_answer, %{answer: answer, user: user}}, %{instruction: instruction, game_id: game_id} = state) do
+    if instruction == answer do
+      Reactor.Game.EventManager.fire_event({:winner, %{user: user, game_id: game_id}})
+      GenServer.stop(self)
+    else
+      {:noreply, state}
+    end
   end
 end

@@ -53,7 +53,13 @@ defmodule Reactor.Game do
 
   def handle_cast({:start_round}, %{users: users, game_id: game_id} = state) do
     users = Enum.map(users, fn({user, _}) -> user end)
-    {:ok, pid} = Reactor.Game.Round.start_link(game_id, users)
+    {:ok, pid} = Reactor.Game.Round.start(game_id, users)
     {:noreply, put_in(state, [:current_round], pid)}
+  end
+
+  def handle_cast({:submit_answer, %{answer: answer, user: user}}, %{current_round: current_round} = state) do
+    GenServer.cast(current_round, {:submit_answer, %{answer: answer, user: user}})
+
+    {:noreply, state}
   end
 end

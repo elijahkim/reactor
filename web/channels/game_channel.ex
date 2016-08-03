@@ -7,6 +7,10 @@ defmodule Reactor.GameChannel do
     Reactor.Endpoint.broadcast("game:#{topic}", "new:round", msg)
   end
 
+  def broadcast_winner(topic, %{user: user} = msg) do
+    Reactor.Endpoint.broadcast("game:#{topic}", "new:message", %{message: "#{user} is the winner!"})
+  end
+
   def join("game", _message, socket) do
     {:ok, socket}
   end
@@ -44,6 +48,13 @@ defmodule Reactor.GameChannel do
    GameManager.start_game(game_id)
 
    {:noreply, socket}
+  end
+
+  def handle_in("new:answer_submission", %{"submission" => submission} = msg, socket) do
+    %{user: user, game_id: game_id} = socket.assigns
+    GameManager.submit_answer(game_id, user, submission)
+
+    {:noreply, socket}
   end
 
   def handle_info({:after_join, message}, socket) do
