@@ -1,6 +1,6 @@
 alias Experimental.GenStage
 
-defmodule Reactor.Game.EventManager do
+defmodule Reactor.EventManager do
   use GenStage
   @name __MODULE__
 
