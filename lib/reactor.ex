@@ -9,8 +9,9 @@ defmodule Reactor do
       supervisor(Reactor.Endpoint, []),
       worker(Reactor.GameManager, []),
       supervisor(Reactor.GamesSupervisor, []),
-      worker(Reactor.Game.EventManager,  []),
-      worker(Reactor.Game.EventHandler, []),
+      worker(Reactor.EventManager,  []),
+      worker(Reactor.ChannelEventHandler, []),
+      worker(Reactor.GamesEventHandler, []),
     ]
 
     opts = [strategy: :one_for_one, name: Reactor.Supervisor]

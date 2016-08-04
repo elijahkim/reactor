@@ -1,6 +1,6 @@
 alias Experimental.GenStage
 
-defmodule Reactor.Game.EventHandler do
+defmodule Reactor.GamesEventHandler do
   use GenStage
   alias Reactor.GameChannel
   alias Reactor.GameManager
@@ -15,18 +15,14 @@ defmodule Reactor.Game.EventHandler do
   def init(:ok) do
     # Starts a permanent subscription to the broadcaster
     # which will automatically start requesting items.
-    {:consumer, :ok, subscribe_to: [Reactor.Game.EventManager]}
-  end
-
-  def handle_event({:new_round, %{game_id: game_id, colors: colors, instruction: instruction}}) do
-    game_id = game_id |> String.replace_leading("game-", "")
-
-    GameChannel.broadcast_new_round(game_id, %{colors: colors, instruction: instruction})
+    {:consumer, :ok, subscribe_to: [Reactor.EventManager]}
   end
 
   def handle_event({:winner, %{user: user, game_id: game_id}}) do
-    GameChannel.broadcast_winner(game_id, %{user: user})
     GameManager.start_round(game_id)
+  end
+
+  def handle_event(_) do
   end
 
   def handle_events([event|events], from, state) do

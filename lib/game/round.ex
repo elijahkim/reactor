@@ -31,14 +31,14 @@ defmodule Reactor.Round do
       |> Map.put(:colors, colors)
       |> Map.put(:instruction, instruction)
 
-    Reactor.Game.EventManager.fire_event({:new_round, state})
+    Reactor.EventManager.fire_event({:new_round, state})
 
     {:noreply, state}
   end
 
   def handle_cast({:submit_answer, %{answer: answer, user: user}}, %{instruction: instruction, game_id: game_id} = state) do
     if instruction == answer do
-      Reactor.Game.EventManager.fire_event({:winner, %{user: user, game_id: game_id}})
+      Reactor.EventManager.fire_event({:winner, %{user: user, game_id: game_id}})
       GenServer.stop(self)
     else
       {:noreply, state}
