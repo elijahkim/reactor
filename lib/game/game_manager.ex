@@ -1,5 +1,7 @@
 defmodule Reactor.GameManager do
   use GenServer
+  alias Reactor.RefHelper
+
   @name __MODULE__
 
   ##client API
@@ -23,54 +25,50 @@ defmodule Reactor.GameManager do
 
   def get_users(game_id) do
     game_id
-    |> to_ref
+    |> RefHelper.to_game_ref
     |> GenServer.call({:get_users})
   end
 
   def add_user_to_game(game_id, user) do
     game_id
-    |> to_ref
+    |> RefHelper.to_game_ref
     |> GenServer.call({:add_user, user})
   end
 
   def remove_user_from_game(game_id, user) do
     game_id
-    |> to_ref
+    |> RefHelper.to_game_ref
     |> GenServer.call({:remove_user, user})
   end
 
   def ready_user(game_id, user) do
     game_id
-    |> to_ref
+    |> RefHelper.to_game_ref
     |> GenServer.call({:ready_user, user})
   end
 
   def start_game(game_id) do
     game_id
-    |> to_ref
+    |> RefHelper.to_game_ref
     |> GenServer.cast({:start_game})
   end
 
   def start_round(game_id) do
     game_id
-    |> to_ref
+    |> RefHelper.to_game_ref
     |> GenServer.cast({:start_round})
   end
 
   def get_current_round(game_id) do
     game_id
-    |> to_ref
+    |> RefHelper.to_game_ref
     |> GenServer.call({:current_round})
   end
 
   def submit_answer(game_id, user, answer) do
     game_id
-    |> to_ref
+    |> RefHelper.to_game_ref
     |> GenServer.cast({:submit_answer, %{user: user, answer: answer}})
-  end
-
-  def to_ref(id) do
-    :"game-#{id}"
   end
 
   ##server callbacks
@@ -82,7 +80,7 @@ defmodule Reactor.GameManager do
   end
 
   def handle_call({:add_game, id}, _from, state) do
-    {:ok, pid} = Reactor.GameSupervisor.create_game(to_ref(id))
+    {:ok, pid} = Reactor.GamesSupervisor.create_game(id)
     {:reply, {id, pid}, put_in(state, [:games, id], pid)}
   end
 
