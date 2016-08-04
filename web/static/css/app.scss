@@ -36,9 +36,27 @@ button {
   border-radius: $base-border-radius;
 }
 
-p {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+label,
+input,
+a, {
   font-family: "Roboto", sans-serif;
-  margin: $small-spacing;
+  margin: $small-spacing 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6, {
+  color: $blue;
 }
 
 .container {
@@ -87,3 +105,4 @@ p {
 }
 
 @import "_game.scss";
+@import "_games-index.scss";

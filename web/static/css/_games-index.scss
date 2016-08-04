@@ -1,0 +1,27 @@
+.games-index__outer-container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+
+  width: 100%;
+  height: 100%;
+  background-color: $off-white;
+}
+
+.games-index__container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  width: 30em;
+  padding: 3em 0;
+}
+
+.games-index__games-container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+}
