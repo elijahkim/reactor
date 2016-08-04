@@ -31,17 +31,6 @@ defmodule Reactor.GameManagerTest do
     assert Enum.count(users) == 0
   end
 
-  test "readys users on games" do
-    {id, _pid} = GameManager.create_game
-    GameManager.add_user_to_game(id, "User")
-    {:ok, %{"User" => user}} = GameManager.get_users(id)
-    assert user.ready == false
-
-    {:ok, user} = GameManager.ready_user(id, "User")
-
-    assert user.ready == true
-  end
-
   test "starts a round per game" do
     {id, _pid} = GameManager.create_game
     GameManager.add_user_to_game(id, "User")
