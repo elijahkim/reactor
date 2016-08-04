@@ -8,7 +8,7 @@ defmodule Reactor do
       supervisor(Reactor.Repo, []),
       supervisor(Reactor.Endpoint, []),
       worker(Reactor.GameManager, []),
-      supervisor(Reactor.GameSupervisor, []),
+      supervisor(Reactor.GamesSupervisor, []),
       worker(Reactor.Game.EventManager,  []),
       worker(Reactor.Game.EventHandler, []),
     ]

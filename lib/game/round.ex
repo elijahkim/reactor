@@ -1,13 +1,9 @@
-defmodule Reactor.Game.Round do
+defmodule Reactor.Round do
   use GenServer
 
   @colors ["red", "green", "yellow", "blue", "orange", "pink"]
 
   ##Client API
-
-  def start(game_id, users) do
-    GenServer.start(__MODULE__, [game_id, users])
-  end
 
   def start_link(game_id, users) do
     GenServer.start_link(__MODULE__, [game_id, users])
@@ -20,7 +16,7 @@ defmodule Reactor.Game.Round do
       users
       |> Enum.map(fn(user) -> {user, %{guess: nil, et: nil}} end)
       |> Enum.into(%{})
-      |> Map.put(:game_id, Atom.to_string(game_id))
+      |> Map.put(:game_id, game_id)
 
     GenServer.cast(self, {:start_round})
     {:ok, state}

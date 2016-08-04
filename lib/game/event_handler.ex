@@ -4,6 +4,7 @@ defmodule Reactor.Game.EventHandler do
   use GenStage
   alias Reactor.GameChannel
   alias Reactor.GameManager
+  alias Reactor.RefHelper
 
   @name __MODULE__
 
@@ -24,8 +25,6 @@ defmodule Reactor.Game.EventHandler do
   end
 
   def handle_event({:winner, %{user: user, game_id: game_id}}) do
-    game_id = game_id |> String.replace_leading("game-", "")
-
     GameChannel.broadcast_winner(game_id, %{user: user})
     GameManager.start_round(game_id)
   end

@@ -1,24 +1,25 @@
 defmodule Reactor.GameSupervisor do
   use Supervisor
+  alias Reactor.RefHelper
+
   @name __MODULE__
 
   ##client API
 
-  def start_link do
-    Supervisor.start_link(@name, :ok, name: @name)
-  end
-
-  def create_game(name) do
-    Supervisor.start_child(@name, [name])
+  def start_link(name) do
+    Supervisor.start_link(@name, name, name: name)
   end
 
   ##server callbacks
 
-  def init(:ok) do
+  def init(name) do
+    id = RefHelper.to_id(name)
+
     children = [
-      worker(Reactor.Game, [])
+      worker(Reactor.Game, [RefHelper.to_game_ref(id)]),
+      supervisor(Reactor.RoundSupervisor, [RefHelper.to_round_sup_ref(id)]),
     ]
 
-    supervise(children, strategy: :simple_one_for_one)
+    supervise(children, strategy: :one_for_one)
   end
 end

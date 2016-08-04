@@ -1,5 +1,7 @@
 defmodule Reactor.Game do
   use GenServer
+  alias Reactor.RefHelper
+  alias Reactor.RoundSupervisor
 
   ##Client API
 
@@ -13,7 +15,7 @@ defmodule Reactor.Game do
     state = %{
       users: %{},
       current_round: nil,
-      game_id: name,
+      game_id: RefHelper.to_id(name),
     }
 
     {:ok, state}
@@ -53,7 +55,8 @@ defmodule Reactor.Game do
 
   def handle_cast({:start_round}, %{users: users, game_id: game_id} = state) do
     users = Enum.map(users, fn({user, _}) -> user end)
-    {:ok, pid} = Reactor.Game.Round.start(game_id, users)
+    {:ok, pid} = RoundSupervisor.start_round(RefHelper.to_round_sup_ref(game_id), users)
+
     {:noreply, put_in(state, [:current_round], pid)}
   end
 
