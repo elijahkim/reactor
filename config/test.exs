@@ -8,10 +8,3 @@ config :reactor, Reactor.Endpoint,
 
 # Print only warnings and errors during test
 config :logger, level: :warn
-
-# Configure your database
-config :reactor, Reactor.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  database: "reactor_test",
-  hostname: "localhost",
-  pool: Ecto.Adapters.SQL.Sandbox

@@ -5,7 +5,6 @@ defmodule Reactor do
     import Supervisor.Spec
 
     children = [
-      supervisor(Reactor.Repo, []),
       supervisor(Reactor.Endpoint, []),
       worker(Reactor.GameManager, []),
       supervisor(Reactor.GamesSupervisor, []),

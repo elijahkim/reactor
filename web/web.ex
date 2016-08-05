@@ -19,20 +19,12 @@ defmodule Reactor.Web do
   def model do
     quote do
       use Ecto.Schema
-
-      import Ecto
-      import Ecto.Changeset
-      import Ecto.Query
     end
   end
 
   def controller do
     quote do
       use Phoenix.Controller
-
-      alias Reactor.Repo
-      import Ecto
-      import Ecto.Query
 
       import Reactor.Router.Helpers
       import Reactor.Gettext
@@ -65,9 +57,6 @@ defmodule Reactor.Web do
     quote do
       use Phoenix.Channel
 
-      alias Reactor.Repo
-      import Ecto
-      import Ecto.Query
       import Reactor.Gettext
     end
   end
