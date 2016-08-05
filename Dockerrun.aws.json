@@ -1,0 +1,23 @@
+{
+  "AWSEBDockerrunVersion": 1,
+  "volumes": [
+    {
+      "name": "elixir-app",
+      "host": {
+        "sourcePath": "/app"
+      }
+    }
+  ],
+  "containerDefinitions": [
+    {
+      "name": "elixir-app",
+      "essential": true,
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 4000
+        }
+      ]
+    }
+  ]
+}
