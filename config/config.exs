@@ -5,10 +5,6 @@
 # is restricted to this project.
 use Mix.Config
 
-# General application configuration
-config :reactor,
-  ecto_repos: [Reactor.Repo]
-
 # Configures the endpoint
 config :reactor, Reactor.Endpoint,
   url: [host: "localhost"],
