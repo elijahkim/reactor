@@ -10,7 +10,7 @@ defmodule Reactor.GameController do
   end
 
   def create(conn, %{"game" => %{"name" => name}}) do
-    {id, _pid} = GameManager.create_game(name)
+    {:ok, id} = GameManager.create_game(name)
     user = get_session(conn, :user)
 
     redirect(conn, to: game_path(conn, :show, id, user: user))
