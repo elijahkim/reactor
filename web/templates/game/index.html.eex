@@ -4,7 +4,7 @@
       <h1>Games</h1>
       <%= for game <- @games do %>
         <div>
-          <%= link("Join #{game}", to: game_path(@conn, :show, game, user: @user)) %>
+          <%= link("Join #{game.name}", to: game_path(@conn, :show, game.id, user: @user)) %>
         </div>
       <% end %>
     </div>

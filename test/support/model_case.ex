@@ -16,23 +16,8 @@ defmodule Reactor.ModelCase do
 
   using do
     quote do
-      alias Reactor.Repo
-
-      import Ecto
-      import Ecto.Changeset
-      import Ecto.Query
       import Reactor.ModelCase
     end
-  end
-
-  setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Reactor.Repo)
-
-    unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Reactor.Repo, {:shared, self()})
-    end
-
-    :ok
   end
 
   @doc """
@@ -57,9 +42,4 @@ defmodule Reactor.ModelCase do
       iex> {:password, "is unsafe"} in changeset.errors
       true
   """
-  def errors_on(struct, data) do
-    struct.__struct__.changeset(struct, data)
-    |> Ecto.Changeset.traverse_errors(&Reactor.ErrorHelpers.translate_error/1)
-    |> Enum.flat_map(fn {key, errors} -> for msg <- errors, do: {key, msg} end)
-  end
 end
