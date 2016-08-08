@@ -74,15 +74,18 @@ defmodule Reactor.GameManager do
   ##server callbacks
 
   def init(:ok) do
-    state = %{games: %{}}
+    state = %{games: []}
 
     {:ok, state}
   end
 
-  def handle_call({:add_game, id}, _from, state) do
-    {:ok, pid} = Reactor.GamesSupervisor.create_game(id)
+  def handle_call({:add_game, name}, _from, %{games: games} = state) do
+    game_id = Enum.count(games) + 1
+    {:ok, _pid} = Reactor.GamesSupervisor.create_game(game_id)
+    game = %{name: name, id: game_id}
+    games = games ++ [game]
 
-    {:reply, {:ok, id}, put_in(state, [:games, id], pid)}
+    {:reply, {:ok, game}, put_in(state, [:games], games)}
   end
 
   def handle_call({:get_games}, _from, %{games: games} = state) do

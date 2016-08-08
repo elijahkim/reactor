@@ -4,11 +4,11 @@ defmodule Reactor.GameChannelTest do
   @endpoint Reactor.Endpoint
 
   test "can start a game" do
-    Reactor.GameManager.create_game("hello")
+    {:ok, %{id: id}} = Reactor.GameManager.create_game
 
     {:ok, _, socket} =
-      socket("game:hello", %{user: "eli"})
-      |> subscribe_and_join(Reactor.GameChannel, "game:hello")
+      socket("game:#{id}", %{user: "eli"})
+      |> subscribe_and_join(Reactor.GameChannel, "game:#{id}")
 
     push(socket, "start_game", %{})
     assert_broadcast "new:round", %{colors: _, instruction: _}
