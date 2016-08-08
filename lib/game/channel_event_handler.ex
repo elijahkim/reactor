@@ -3,8 +3,6 @@ alias Experimental.GenStage
 defmodule Reactor.ChannelEventHandler do
   use GenStage
   alias Reactor.GameChannel
-  alias Reactor.GameManager
-  alias Reactor.RefHelper
 
   @name __MODULE__
 

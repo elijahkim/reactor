@@ -2,9 +2,7 @@ alias Experimental.GenStage
 
 defmodule Reactor.GamesEventHandler do
   use GenStage
-  alias Reactor.GameChannel
   alias Reactor.GameManager
-  alias Reactor.RefHelper
 
   @name __MODULE__
 
@@ -18,7 +16,7 @@ defmodule Reactor.GamesEventHandler do
     {:consumer, :ok, subscribe_to: [Reactor.EventManager]}
   end
 
-  def handle_event({:winner, %{user: user, game_id: game_id}}) do
+  def handle_event({:winner, %{game_id: game_id}}) do
     GameManager.start_round(game_id)
   end
 

@@ -81,7 +81,8 @@ defmodule Reactor.GameManager do
 
   def handle_call({:add_game, id}, _from, state) do
     {:ok, pid} = Reactor.GamesSupervisor.create_game(id)
-    {:reply, {id, pid}, put_in(state, [:games, id], pid)}
+
+    {:reply, {:ok, id}, put_in(state, [:games, id], pid)}
   end
 
   def handle_call({:get_games}, _from, %{games: games} = state) do
