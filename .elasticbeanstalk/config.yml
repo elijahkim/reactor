@@ -1,0 +1,13 @@
+branch-defaults:
+  deploy-aws:
+    environment: reactor-dev7
+  master:
+    environment: reactor-dev
+    group_suffix: null
+global:
+  application_name: reactor
+  default_ec2_keyname: aws-eb
+  default_platform: Docker 1.11.1
+  default_region: us-east-1
+  profile: eb-cli
+  sc: git
