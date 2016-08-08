@@ -8,7 +8,7 @@ defmodule Reactor.GameChannel do
   end
 
   def broadcast_winner(topic, %{user: user}) do
-    Reactor.Endpoint.broadcast("game:#{topic}", "new:message", %{message: "#{user} is the winner!"})
+    Reactor.Endpoint.broadcast("game:#{topic}", "new:winner", %{user: user})
   end
 
   def join("game", _message, socket) do

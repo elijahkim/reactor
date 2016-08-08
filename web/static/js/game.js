@@ -16,7 +16,7 @@ class Game extends Component {
       connected: false,
       messages: [],
       users: [],
-      state: null,
+      state: "waiting",
     }
   }
 
@@ -46,11 +46,21 @@ class Game extends Component {
 
     this.channel.on("new:user_update", (msg) => {
       this.setState({users: msg.users});
-    })
+    });
 
     this.channel.on("new:round", (msg) => {
-      this.setState(Object.assign({}, msg, { state: "in_progress" }))
-    })
+      this.setState(Object.assign({}, msg, { state: "in_progress" }));
+    });
+
+    this.channel.on("new:winner", (msg) => {
+      const { messages } = this.state;
+
+      this.setState({
+        messages: concat(messages, `${msg.user} is the winner!`),
+        winner: msg.user,
+        state: "winner_received"
+      });
+    });
   }
 
   handleReadySubmission(e) {
@@ -77,6 +87,32 @@ class Game extends Component {
   renderUsers(users) {
     const joinedUsers = join(map(users, "name"), ", ")
     return <p>{ joinedUsers }</p>;
+  }
+
+  renderMain() {
+    const { state, instruction, colors, winner } = this.state;
+
+    switch(state) {
+      case "waiting":
+        return this.renderWaiting();
+      case "in_progress":
+        return this.renderColors(colors, instruction);
+      case "winner_received":
+        return this.renderWinner(winner);
+    }
+  }
+
+  renderWinner(winner) {
+    return (
+      <div className="game__colors-container">
+        <div className="game__color-instruction-container">
+          <h1 className="game__color-instruction-text">
+            Waiting for round to begin
+          </h1>
+        </div>
+        <h1 className="game__winner-accouncement">{winner} is the winner</h1>
+      </div>
+    )
   }
 
   renderColors(colors, instruction) {
@@ -136,7 +172,7 @@ class Game extends Component {
 
     return (
       <div className="game__container">
-        { state == "in_progress" ? this.renderColors(colors, instruction) : this.renderWaiting() }
+        { this.renderMain() }
 
         <div className="game__sidebar-container">
           <div className="game__users-container">
