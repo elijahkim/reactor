@@ -7,7 +7,7 @@ defmodule Reactor.GameChannel do
     Reactor.Endpoint.broadcast("game:#{topic}", "new:round", msg)
   end
 
-  def broadcast_winner(topic, %{user: user} = msg) do
+  def broadcast_winner(topic, %{user: user}) do
     Reactor.Endpoint.broadcast("game:#{topic}", "new:message", %{message: "#{user} is the winner!"})
   end
 
@@ -26,7 +26,7 @@ defmodule Reactor.GameChannel do
     {:ok, socket}
   end
 
-  def terminate(reason, socket) do
+  def terminate(_reason, socket) do
     %{user: user, game_id: game_id} = socket.assigns
 
     {:ok, users} = GameManager.remove_user_from_game(game_id, user)
@@ -34,7 +34,7 @@ defmodule Reactor.GameChannel do
     :ok
   end
 
-  def handle_in("new:user_ready", msg, socket) do
+  def handle_in("new:user_ready", _msg, socket) do
     %{user: user, game_id: game_id} = socket.assigns
 
     {:ok, %{name: name}} = GameManager.ready_user(game_id, user)
@@ -43,21 +43,21 @@ defmodule Reactor.GameChannel do
     {:noreply, socket}
   end
 
-  def handle_in("start_game", msg, socket) do
+  def handle_in("start_game", _msg, socket) do
    %{game_id: game_id} = socket.assigns
    GameManager.start_game(game_id)
 
    {:noreply, socket}
   end
 
-  def handle_in("new:answer_submission", %{"submission" => submission} = msg, socket) do
+  def handle_in("new:answer_submission", %{"submission" => submission}, socket) do
     %{user: user, game_id: game_id} = socket.assigns
     GameManager.submit_answer(game_id, user, submission)
 
     {:noreply, socket}
   end
 
-  def handle_info({:after_join, message}, socket) do
+  def handle_info({:after_join, _msg}, socket) do
     push(socket, "new:message", %{message: "Welcome! Please wait for users to join"})
 
     {:noreply, socket}
@@ -75,7 +75,6 @@ defmodule Reactor.GameChannel do
       |> assign(:game_id, game_id)
 
     {:ok, users} = GameManager.add_user_to_game(game_id, user)
-
     {:ok, users, socket}
   end
 end
