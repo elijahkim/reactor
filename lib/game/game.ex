@@ -55,6 +55,7 @@ defmodule Reactor.Game do
 
   def handle_cast({:start_round}, %{users: users, game_id: game_id} = state) do
     users = Enum.map(users, fn({user, _}) -> user end)
+    :timer.sleep(3000)
     {:ok, pid} = RoundSupervisor.start_round(RefHelper.to_round_sup_ref(game_id), users)
 
     {:noreply, put_in(state, [:current_round], pid)}

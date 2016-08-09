@@ -11,6 +11,6 @@ defmodule Reactor.GameChannelTest do
       |> subscribe_and_join(Reactor.GameChannel, "game:#{id}")
 
     push(socket, "start_game", %{})
-    assert_broadcast "new:round", %{colors: _, instruction: _}
+    assert_broadcast("new:round", %{colors: _, instruction: _}, 4000)
   end
 end
