@@ -65,10 +65,10 @@ defmodule Reactor.GameManager do
     |> GenServer.call({:current_round})
   end
 
-  def submit_answer(game_id, user, answer) do
+  def submit_answer(game_id, user, answer, et) do
     game_id
     |> RefHelper.to_game_ref
-    |> GenServer.cast({:submit_answer, %{user: user, answer: answer}})
+    |> GenServer.cast({:submit_answer, %{user: user, answer: answer, et: et}})
   end
 
   ##server callbacks

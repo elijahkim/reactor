@@ -61,8 +61,8 @@ defmodule Reactor.Game do
     {:noreply, put_in(state, [:current_round], pid)}
   end
 
-  def handle_cast({:submit_answer, %{answer: answer, user: user}}, %{current_round: current_round} = state) do
-    GenServer.cast(current_round, {:submit_answer, %{answer: answer, user: user}})
+  def handle_cast({:submit_answer, %{answer: answer, user: user, et: et}}, %{current_round: current_round} = state) do
+    GenServer.cast(current_round, {:submit_answer, %{answer: answer, user: user, et: et}})
 
     {:noreply, state}
   end
