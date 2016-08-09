@@ -10,27 +10,6 @@
   background-color: $off-white;
 }
 
-.game__color-instruction-container {
-  height: 5em;
-  padding: $small-spacing;
-  text-align: center;
-}
-
-.game__color-instruction-text {
-  color: black;
-}
-
-.game__colors-container {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
-.game__colors-row {
-  display: flex;
-  flex: 5;
-}
-
 .game__chat-container {
   display: flex;
   flex-direction: column;
@@ -61,43 +40,4 @@
   justify-content: flex-end;
   flex-direction: column;
   overflow-x: scroll;
-}
-
-.game__color-block {
-  display: flex;
-  flex: 1;
-  margin: 0;
-  border: 0;
-  border-radius: 0;
-  &:focus {
-    outline: none;
-  }
-}
-
-.game__winner-accouncement {
-  text-align: center;
-}
-
-.blue {
-  background-color: blue;
-}
-
-.red {
-  background-color: red;
-}
-
-.green {
-  background-color: green;
-}
-
-.yellow {
-  background-color: yellow;
-}
-
-.orange {
-  background-color: orange;
-}
-
-.pink {
-  background-color: #FF69B4;
 }
