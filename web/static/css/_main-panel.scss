@@ -1,0 +1,78 @@
+.main-panel__container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  background-color: $off-white;
+}
+
+.main-panel__instruction-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  height: 5em;
+  padding: $small-spacing;
+  text-align: center;
+  border-bottom: $base-border;
+}
+
+.main-panel__color-instruction-text {
+  color: black;
+}
+
+.main-panel__main-container {
+  display: flex;
+  flex: 1;
+}
+
+.main-panel__colors-container {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.main-panel__color-block {
+  display: inline-block;
+  width: 50%;
+  height: 50%;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  &:focus {
+    outline: none;
+  }
+}
+
+.main-panel__winner-announcement-container {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+
+  background-color: black;
+}
+
+.blue {
+  background-color: blue;
+}
+
+.red {
+  background-color: red;
+}
+
+.green {
+  background-color: green;
+}
+
+.yellow {
+  background-color: yellow;
+}
+
+.orange {
+  background-color: orange;
+}
+
+.pink {
+  background-color: #FF69B4;
+}

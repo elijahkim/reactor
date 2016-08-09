@@ -7,6 +7,7 @@ import map from "lodash/map";
 import join from "lodash/join";
 import concat from "lodash/concat";
 import qs from "qs";
+import MainPanel from "./components/MainPanel";
 
 class Game extends Component {
   constructor(props) {
@@ -70,9 +71,7 @@ class Game extends Component {
     this.channel.push("start_game", {user: user});
   }
 
-  handleClick(e, color) {
-    e.preventDefault();
-
+  handleClick(color) {
     this.channel.push("new:answer_submission", {submission: color});
   }
 
@@ -89,90 +88,18 @@ class Game extends Component {
     return <p>{ joinedUsers }</p>;
   }
 
-  renderMain() {
-    const { state, instruction, colors, winner } = this.state;
-
-    switch(state) {
-      case "waiting":
-        return this.renderWaiting();
-      case "in_progress":
-        return this.renderColors(colors, instruction);
-      case "winner_received":
-        return this.renderWinner(winner);
-    }
-  }
-
-  renderWinner(winner) {
-    return (
-      <div className="game__colors-container">
-        <div className="game__color-instruction-container">
-          <h1 className="game__color-instruction-text">
-            Waiting for round to begin
-          </h1>
-        </div>
-        <h1 className="game__winner-accouncement">{winner} is the winner</h1>
-      </div>
-    )
-  }
-
-  renderColors(colors, instruction) {
-    return (
-      <div className="game__colors-container">
-        <div className="game__color-instruction-container">
-          <h1 className="game__color-instruction-text">
-            { instruction.toUpperCase() }
-          </h1>
-        </div>
-        <div className="game__colors-row">
-          <button
-            className={`game__color-block ${colors[0]}`}
-            onClick={(e) => this.handleClick(e, colors[0])}
-          >
-          </button>
-          <button
-            className={`game__color-block ${colors[1]}`}
-            onClick={(e) => this.handleClick(e, colors[1])}
-          >
-          </button>
-        </div>
-        <div className="game__colors-row">
-          <button
-            className={`game__color-block ${colors[2]}`}
-            onClick={(e) => this.handleClick(e, colors[2])}
-          >
-          </button>
-          <button
-            className={`game__color-block ${colors[3]}`}
-            onClick={(e) => this.handleClick(e, colors[3])}
-          >
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  renderWaiting() {
-    return (
-      <div className="game__colors-container">
-        <div className="game__color-instruction-container">
-          <h1 className="game__color-instruction-text">
-            Waiting for round to begin
-          </h1>
-        </div>
-        <div className="game__colors-row">
-        </div>
-        <div className="game__colors-row">
-        </div>
-      </div>
-    )
-  }
-
   render() {
-    const { messages, users, colors, state, instruction } = this.state;
+    const { winner, messages, users, colors, state, instruction } = this.state;
 
     return (
       <div className="game__container">
-        { this.renderMain() }
+        <MainPanel
+          colors={colors}
+          state={state}
+          instruction={instruction}
+          winner={winner}
+          onColorClick={(color) => this.handleClick(color)}
+        />
 
         <div className="game__sidebar-container">
           <div className="game__users-container">
