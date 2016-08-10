@@ -43,12 +43,22 @@ class MainPanel extends Component {
     )
   }
 
+  renderWaiting() {
+    return (
+      <div className="main-panel__winner-announcement-container">
+        <h1>Waiting for results</h1>
+      </div>
+    )
+  }
+
   renderMain(colors, winner, state) {
     switch(state) {
       case "in_progress":
         return this.renderColors(colors);
       case "winner_received":
         return this.renderWinner(winner);
+      case "answer_selected":
+        return this.renderWaiting();
       default:
         return;
     }

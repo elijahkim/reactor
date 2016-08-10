@@ -75,6 +75,7 @@ class Game extends Component {
     const { receivedAt } = this.state;
     const time = new Date();
     this.channel.push("new:answer_submission", {submission: color, et: time - receivedAt});
+    this.setState({state: "answer_selected"})
   }
 
   renderMessages(messages) {
