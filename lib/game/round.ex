@@ -21,7 +21,6 @@ defmodule Reactor.Round do
       users: users
     }
 
-    Process.send_after(self, {:find_winner}, 2000)
     GenServer.cast(self, {:start_round})
     {:ok, state}
   end
@@ -45,6 +44,7 @@ defmodule Reactor.Round do
       |> put_in([:users, user, :answer], answer)
       |> put_in([:users, user, :et], et)
 
+    Process.send_after(self, {:find_winner}, 1000)
     {:noreply, state}
   end
 
@@ -54,13 +54,12 @@ defmodule Reactor.Round do
       |> find_users_with_correct_answers(instruction)
       |> case do
         [] ->
-          Reactor.EventManager.fire_event({:no_winner, %{game_id: game_id}})
-          GenServer.stop(self, :end_of_round)
+          {:no_winner, :no_winner}
         users ->
           find_quickest_user(users)
       end
 
-    Reactor.EventManager.fire_event({:winner, %{user: name, game_id: game_id}})
+    emit_winner(name, game_id)
     GenServer.stop(self, :end_of_round)
 
     {:noreply, state}
@@ -72,5 +71,13 @@ defmodule Reactor.Round do
 
   defp find_quickest_user(users) do
     Enum.min_by(users, fn({_name, user}) -> user.et end)
+  end
+
+  defp emit_winner(:no_winner, game_id) do
+    Reactor.EventManager.fire_event({:no_winner, %{game_id: game_id}})
+  end
+
+  defp emit_winner(winner, game_id) do
+    Reactor.EventManager.fire_event({:winner, %{user: winner, game_id: game_id}})
   end
 end
