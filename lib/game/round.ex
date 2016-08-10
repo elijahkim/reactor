@@ -1,7 +1,6 @@
 defmodule Reactor.Round do
   use GenServer
-
-  @colors ["red", "green", "yellow", "blue", "orange", "pink"]
+  @random_color_picker Application.get_env(:reactor, :random_color_picker)
 
   ##Client API
 
@@ -12,19 +11,23 @@ defmodule Reactor.Round do
   ##Server Callbacks
 
   def init([game_id, users]) do
-    state =
+    users =
       users
-      |> Enum.map(fn(user) -> {user, %{guess: nil, et: nil}} end)
+      |> Enum.map(fn(user) -> {user, %{name: user, answer: nil, et: nil}} end)
       |> Enum.into(%{})
-      |> Map.put(:game_id, game_id)
 
+    state = %{
+      game_id: game_id,
+      users: users
+    }
+
+    Process.send_after(self, {:find_winner}, 2000)
     GenServer.cast(self, {:start_round})
     {:ok, state}
   end
 
   def handle_cast({:start_round}, state) do
-    colors = Enum.take_random(@colors, 4)
-    instruction = Enum.random(colors)
+    {colors, instruction} = @random_color_picker.get_colors
 
     state =
       state
@@ -36,12 +39,36 @@ defmodule Reactor.Round do
     {:noreply, state}
   end
 
-  def handle_cast({:submit_answer, %{answer: answer, user: user}}, %{instruction: instruction, game_id: game_id} = state) do
-    if instruction == answer do
-      Reactor.EventManager.fire_event({:winner, %{user: user, game_id: game_id}})
-      GenServer.stop(self)
-    else
-      {:noreply, state}
-    end
+  def handle_cast({:submit_answer, %{answer: answer, user: user, et: et}}, state) do
+    state =
+      state
+      |> put_in([:users, user, :answer], answer)
+      |> put_in([:users, user, :et], et)
+
+    {:noreply, state}
+  end
+
+  def handle_info({:find_winner}, %{game_id: game_id, users: users, instruction: instruction} = state) do
+    {name, _winner} =
+      users
+      |> find_users_with_correct_answers(instruction)
+      |> find_quickest_user
+
+    Reactor.EventManager.fire_event({:winner, %{user: name, game_id: game_id}})
+    GenServer.stop(self, :end_of_round)
+
+    {:noreply, state}
+  end
+
+  defp find_users_with_correct_answers(users, instruction) do
+    Enum.filter(users, fn({_name, user}) -> user.answer == instruction end)
+  end
+
+  defp find_quickest_user([]) do
+    GenServer.stop(self, :end_of_round)
+  end
+
+  defp find_quickest_user(users) do
+    Enum.min_by(users, fn({_name, user}) -> user.et end)
   end
 end

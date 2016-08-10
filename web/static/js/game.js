@@ -50,7 +50,7 @@ class Game extends Component {
     });
 
     this.channel.on("new:round", (msg) => {
-      this.setState(Object.assign({}, msg, { state: "in_progress" }));
+      this.setState(Object.assign({}, msg, { state: "in_progress", receivedAt: new Date() }));
     });
 
     this.channel.on("new:winner", (msg) => {
@@ -72,7 +72,9 @@ class Game extends Component {
   }
 
   handleClick(color) {
-    this.channel.push("new:answer_submission", {submission: color});
+    const { receivedAt } = this.state;
+    const time = new Date();
+    this.channel.push("new:answer_submission", {submission: color, et: time - receivedAt});
   }
 
   renderMessages(messages) {

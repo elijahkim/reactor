@@ -50,9 +50,9 @@ defmodule Reactor.GameChannel do
    {:noreply, socket}
   end
 
-  def handle_in("new:answer_submission", %{"submission" => submission}, socket) do
+  def handle_in("new:answer_submission", %{"submission" => submission, "et" => et}, socket) do
     %{user: user, game_id: game_id} = socket.assigns
-    GameManager.submit_answer(game_id, user, submission)
+    GameManager.submit_answer(game_id, user, submission, et)
 
     {:noreply, socket}
   end

@@ -10,8 +10,9 @@ config :reactor, Reactor.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "f5OcgP2+RUk02PDL6KBmLSDPlFocZajFYJB50MBL5ykw6sYqvUkwfmzJr4XwhIdG",
   render_errors: [view: Reactor.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Reactor.PubSub,
-           adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: Reactor.PubSub, adapter: Phoenix.PubSub.PG2]
+
+config :reactor, :random_color_picker, Reactor.RandomColorPicker
 
 # Configures Elixir's Logger
 config :logger, :console,
