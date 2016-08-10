@@ -46,4 +46,17 @@ defmodule Reactor.GameManagerTest do
 
     assert is_pid(round)
   end
+
+  test "adds the winner to the game when a round is over", game do
+    GameManager.start_round(game.id)
+    GameManager.add_user_to_game(game.id, "User")
+    GameManager.start_game(game.id)
+    :timer.sleep(3000)
+    GameManager.submit_answer(game.id, "User", "blue", 1)
+    :timer.sleep(3000)
+
+    {:ok, %{"User" => user}} = GameManager.get_users(game.id)
+
+    assert user.score == 1
+  end
 end

@@ -64,7 +64,8 @@ class Game extends Component {
       this.setState({
         messages: concat(messages, `${msg.user} is the winner!`),
         winner: msg.user,
-        state: "winner_received"
+        state: "winner_received",
+        users: msg.users,
       });
     });
   }
@@ -115,6 +116,7 @@ class Game extends Component {
           instruction={instruction}
           winner={winner}
           onColorClick={(color) => this.handleClick(color)}
+          users={users}
         />
 
         <div className="game__sidebar-container">

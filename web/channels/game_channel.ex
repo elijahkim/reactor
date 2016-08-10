@@ -3,12 +3,13 @@ defmodule Reactor.GameChannel do
   alias Reactor.GameManager
   require Logger
 
-  def broadcast_new_round(topic, msg) do
-    Reactor.Endpoint.broadcast("game:#{topic}", "new:round", msg)
+  def broadcast_new_round(game_id, msg) do
+    Reactor.Endpoint.broadcast("game:#{game_id}", "new:round", msg)
   end
 
-  def broadcast_winner(topic, %{user: user}) do
-    Reactor.Endpoint.broadcast("game:#{topic}", "new:winner", %{user: user})
+  def broadcast_winner(game_id, %{user: user}) do
+    {:ok, users} = GameManager.get_users(game_id)
+    Reactor.Endpoint.broadcast("game:#{game_id}", "new:winner", %{user: user, users: users})
   end
 
   def join("game", _message, socket) do
