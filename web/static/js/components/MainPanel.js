@@ -36,26 +36,30 @@ class MainPanel extends Component {
   renderColors(colors, instruction) {
     return (
       <div className="main-panel__colors-container">
-        <button
-          className={`main-panel__color-block ${colors[0]}`}
-          onClick={(e) => this.handleColorClick(e, colors[0])}
-        >
-        </button>
-        <button
-          className={`main-panel__color-block ${colors[1]}`}
-          onClick={(e) => this.handleColorClick(e, colors[1])}
-        >
-        </button>
-        <button
-          className={`main-panel__color-block ${colors[2]}`}
-          onClick={(e) => this.handleColorClick(e, colors[2])}
-        >
-        </button>
-        <button
-          className={`main-panel__color-block ${colors[3]}`}
-          onClick={(e) => this.handleColorClick(e, colors[3])}
-        >
-        </button>
+        <div className="main-panel__color-row">
+          <button
+            className={`main-panel__color-block ${colors[0]}`}
+            onClick={(e) => this.handleColorClick(e, colors[0])}
+          >
+          </button>
+          <button
+            className={`main-panel__color-block ${colors[1]}`}
+            onClick={(e) => this.handleColorClick(e, colors[1])}
+          >
+          </button>
+        </div>
+        <div className="main-panel__color-row">
+          <button
+            className={`main-panel__color-block ${colors[2]}`}
+            onClick={(e) => this.handleColorClick(e, colors[2])}
+          >
+          </button>
+          <button
+            className={`main-panel__color-block ${colors[3]}`}
+            onClick={(e) => this.handleColorClick(e, colors[3])}
+          >
+          </button>
+        </div>
       </div>
     )
   }

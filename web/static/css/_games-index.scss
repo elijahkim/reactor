@@ -15,8 +15,9 @@
   flex-direction: column;
   justify-content: flex-start;
 
-  width: 30em;
-  padding: 3em 0;
+  width: 100%;
+  max-width: 30em;
+  margin: 3em 1em;
 }
 
 .games-index__games-container {
