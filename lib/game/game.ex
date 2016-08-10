@@ -66,4 +66,11 @@ defmodule Reactor.Game do
 
     {:noreply, state}
   end
+
+  def handle_cast({:handle_winner, %{winner: winner}}, state) do
+    {_, state} = get_and_update_in(state, [:users, winner, :score], &{&1, &1 + 1})
+    GenServer.cast(self, {:start_round})
+
+    {:noreply, state}
+  end
 end

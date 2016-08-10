@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import map from "lodash/map";
+import sortBy from "lodash/sortBy";
 
 class MainPanel extends Component {
   handleColorClick(e, color) {
@@ -8,10 +10,18 @@ class MainPanel extends Component {
     onColorClick(color)
   }
 
-  renderWinner(winner) {
+  renderWinner(winner, users) {
+    const sortedUsers = sortBy(users, (user) => -(user.score));
+    const usersHtml = map(sortedUsers, (user, index) => {
+      return <li key={index}><h3>{user.name}: {user.score}</h3></li>
+    });
+
     return (
       <div className="main-panel__winner-announcement-container">
         <h1>{winner} is the winner</h1>
+        <ul>
+          { usersHtml }
+        </ul>
       </div>
     )
   }
@@ -51,12 +61,12 @@ class MainPanel extends Component {
     )
   }
 
-  renderMain(colors, winner, state) {
+  renderMain(colors, winner, users, state) {
     switch(state) {
       case "in_progress":
         return this.renderColors(colors);
       case "winner_received":
-        return this.renderWinner(winner);
+        return this.renderWinner(winner, users);
       case "answer_selected":
         return this.renderWaiting();
       default:
@@ -76,7 +86,7 @@ class MainPanel extends Component {
   }
 
   render() {
-    const { colors, instruction, state, winner } = this.props;
+    const { colors, instruction, state, winner, users } = this.props;
 
     return (
       <div className="main-panel__container">
@@ -86,7 +96,7 @@ class MainPanel extends Component {
           </h1>
         </div>
         <div className="main-panel__main-container">
-          { this.renderMain(colors, winner, state) }
+          { this.renderMain(colors, winner, users, state) }
         </div>
       </div>
     );

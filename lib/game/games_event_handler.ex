@@ -16,8 +16,8 @@ defmodule Reactor.GamesEventHandler do
     {:consumer, :ok, subscribe_to: [Reactor.EventManager]}
   end
 
-  def handle_event({:winner, %{game_id: game_id}}) do
-    GameManager.start_round(game_id)
+  def handle_event({:winner, %{game_id: game_id, user: user}}) do
+    GameManager.handle_winner(game_id, user)
   end
 
   def handle_event(_) do

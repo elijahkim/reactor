@@ -71,6 +71,12 @@ defmodule Reactor.GameManager do
     |> GenServer.cast({:submit_answer, %{user: user, answer: answer, et: et}})
   end
 
+  def handle_winner(game_id, winner) do
+    game_id
+    |> RefHelper.to_game_ref
+    |> GenServer.cast({:handle_winner, %{winner: winner}})
+  end
+
   ##server callbacks
 
   def init(:ok) do
