@@ -20,6 +20,10 @@ defmodule Reactor.GamesEventHandler do
     GameManager.start_round(game_id)
   end
 
+  def handle_event({:no_winner, %{game_id: game_id}}) do
+    GameManager.start_round(game_id)
+  end
+
   def handle_event(_) do
   end
 

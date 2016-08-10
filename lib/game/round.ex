@@ -52,7 +52,13 @@ defmodule Reactor.Round do
     {name, _winner} =
       users
       |> find_users_with_correct_answers(instruction)
-      |> find_quickest_user
+      |> case do
+        [] ->
+          Reactor.EventManager.fire_event({:no_winner, %{game_id: game_id}})
+          GenServer.stop(self, :end_of_round)
+        users ->
+          find_quickest_user(users)
+      end
 
     Reactor.EventManager.fire_event({:winner, %{user: name, game_id: game_id}})
     GenServer.stop(self, :end_of_round)
@@ -62,10 +68,6 @@ defmodule Reactor.Round do
 
   defp find_users_with_correct_answers(users, instruction) do
     Enum.filter(users, fn({_name, user}) -> user.answer == instruction end)
-  end
-
-  defp find_quickest_user([]) do
-    GenServer.stop(self, :end_of_round)
   end
 
   defp find_quickest_user(users) do

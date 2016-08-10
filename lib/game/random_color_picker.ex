@@ -1,5 +1,14 @@
 defmodule Reactor.RandomColorPicker do
-  @colors ["red", "green", "yellow", "blue", "orange", "pink"]
+  @colors [
+    "blue",
+    "brown",
+    "green",
+    "orange",
+    "pink",
+    "purple",
+    "red",
+    "yellow",
+  ]
 
   def get_colors do
     colors = Enum.take_random(@colors, 4)
