@@ -18,6 +18,7 @@ class Game extends Component {
       messages: [],
       users: [],
       state: "waiting",
+      showReadyButton: true,
     }
   }
 
@@ -50,7 +51,11 @@ class Game extends Component {
     });
 
     this.channel.on("new:round", (msg) => {
-      this.setState(Object.assign({}, msg, { state: "in_progress", receivedAt: new Date() }));
+      this.setState(Object.assign({}, msg, {
+        state: "in_progress",
+        receivedAt: new Date(),
+        showReadyButton: false,
+      }));
     });
 
     this.channel.on("new:winner", (msg) => {
@@ -92,7 +97,15 @@ class Game extends Component {
   }
 
   render() {
-    const { winner, messages, users, colors, state, instruction } = this.state;
+    const {
+      colors,
+      instruction,
+      messages,
+      showReadyButton,
+      state,
+      users,
+      winner,
+    } = this.state;
 
     return (
       <div className="game__container">
@@ -114,12 +127,12 @@ class Game extends Component {
             </div>
 
           </div>
-          <button
+          { showReadyButton && <button
             onClick={(e) => this.handleReadySubmission(e)}
             type="button"
           >
             Ready
-          </button>
+          </button>}
         </div>
       </div>
     );
