@@ -10,6 +10,13 @@ class MainPanel extends Component {
     onColorClick(color)
   }
 
+  handleStartClick(e) {
+    e.preventDefault();
+    const { onStartClick } = this.props;
+
+    onStartClick();
+  }
+
   renderWinner(winner, users) {
     const sortedUsers = sortBy(users, (user) => -(user.score));
     const usersHtml = map(sortedUsers, (user, index) => {
@@ -61,8 +68,21 @@ class MainPanel extends Component {
     )
   }
 
+  renderStartButton() {
+    return (
+      <a
+        onClick={(e) => this.handleStartClick(e)}
+        className="main-panel__start-button"
+      >
+        <h1>Press to begin</h1>
+      </a>
+    )
+  }
+
   renderMain(colors, winner, users, state) {
     switch(state) {
+      case "waiting":
+        return this.renderStartButton();
       case "in_progress":
         return this.renderColors(colors);
       case "winner_received":

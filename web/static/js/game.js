@@ -71,7 +71,6 @@ class Game extends Component {
   }
 
   handleReadySubmission(e) {
-    e.preventDefault();
     const user = qs.parse(window.location.search.split("?")[1])["user"];
 
     this.channel.push("start_game", {user: user});
@@ -116,26 +115,9 @@ class Game extends Component {
           instruction={instruction}
           winner={winner}
           onColorClick={(color) => this.handleClick(color)}
+          onStartClick={() => this.handleReadySubmission()}
           users={users}
         />
-
-        <div className="game__sidebar-container">
-          <div className="game__users-container">
-            { this.renderUsers(users) }
-          </div>
-          <div className="game__chat-container">
-            <div className="game__messages-container">
-              { this.renderMessages(messages) }
-            </div>
-
-          </div>
-          { showReadyButton && <button
-            onClick={(e) => this.handleReadySubmission(e)}
-            type="button"
-          >
-            Ready
-          </button>}
-        </div>
       </div>
     );
   }
