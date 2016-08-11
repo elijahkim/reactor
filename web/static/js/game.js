@@ -123,6 +123,10 @@ class Game extends Component {
   }
 }
 
-ReactDOM.render(<Game />, document.getElementById("react-app-game"));
+const elem = document.getElementById("react-app-game");
+
+if (elem) {
+  ReactDOM.render(<Game />, elem);
+}
 
 export default Game;

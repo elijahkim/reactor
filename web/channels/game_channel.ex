@@ -12,7 +12,14 @@ defmodule Reactor.GameChannel do
     Reactor.Endpoint.broadcast("game:#{game_id}", "new:winner", %{user: user, users: users})
   end
 
-  def join("game", _message, socket) do
+  def broadcast_games do
+    {:ok, games} = GameManager.get_games
+    Reactor.Endpoint.broadcast("game:lobby", "new:game_update", %{games: games})
+  end
+
+  def join("game:lobby", _message, socket) do
+    send(self, {:broadcast_games})
+
     {:ok, socket}
   end
 
@@ -27,11 +34,13 @@ defmodule Reactor.GameChannel do
     {:ok, socket}
   end
 
-  def terminate(_reason, socket) do
-    %{user: user, game_id: game_id} = socket.assigns
-
+  def terminate(_reason, %{assigns: %{user: user, game_id: game_id}} = socket) do
     {:ok, users} = GameManager.remove_user_from_game(game_id, user)
     broadcast(socket, "new:user_update", %{users: users})
+    :ok
+  end
+
+  def terminate(_, socket) do
     :ok
   end
 
@@ -66,6 +75,13 @@ defmodule Reactor.GameChannel do
 
   def handle_info({:user_update, users}, socket) do
     broadcast(socket, "new:user_update", %{users: users})
+    {:noreply, socket}
+  end
+
+  def handle_info({:broadcast_games}, socket) do
+    {:ok, games} = GameManager.get_games
+    broadcast(socket, "new:game_update", %{games: games})
+
     {:noreply, socket}
   end
 

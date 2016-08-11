@@ -3,10 +3,9 @@ defmodule Reactor.GameController do
   alias Reactor.GameManager
 
   def index(conn, _params) do
-    {:ok, games} = GameManager.get_games
     user = get_session(conn, :user)
 
-    render(conn, "index.html", games: games, user: user)
+    render(conn, "index.html", user: user)
   end
 
   def create(conn, %{"game" => %{"name" => name}}) do

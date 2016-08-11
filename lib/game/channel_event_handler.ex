@@ -26,6 +26,10 @@ defmodule Reactor.ChannelEventHandler do
     GameChannel.broadcast_winner(game_id, %{user: user})
   end
 
+  def handle_event({:new_game, _state}) do
+    GameChannel.broadcast_games
+  end
+
   def handle_event(_) do
   end
 

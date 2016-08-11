@@ -1,12 +1,7 @@
 <div class="games-index__outer-container">
   <div class="games-index__container">
     <div class="games-index__games-container">
-      <h1>Games</h1>
-      <%= for game <- @games do %>
-        <div>
-          <%= link("Join #{game.name}", to: game_path(@conn, :show, game.id, user: @user)) %>
-        </div>
-      <% end %>
+      <div id="react-app-games" js-user=<%= @user %>></div>
     </div>
 
     <div class="games-index__game-form-container">

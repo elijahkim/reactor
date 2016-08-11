@@ -18,6 +18,8 @@ defmodule Reactor.Game do
       game_id: RefHelper.to_id(name),
     }
 
+    GenServer.cast(self, {:broadcast_init})
+
     {:ok, state}
   end
 
@@ -46,6 +48,12 @@ defmodule Reactor.Game do
 
   def handle_call({:current_round}, _from, %{current_round: current_round} = state) do
     {:reply, {:ok, current_round}, state}
+  end
+
+  def handle_cast({:broadcast_init}, state) do
+    Reactor.EventManager.fire_event({:new_game, state})
+
+    {:noreply, state}
   end
 
   def handle_cast({:start_game}, state) do
