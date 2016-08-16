@@ -59,4 +59,16 @@ defmodule Reactor.GameManagerTest do
 
     assert user.score == 1
   end
+
+  test "readys users in a game", game do
+    GameManager.add_user_to_game(game.id, "User")
+    {:ok, %{"User" => user}} = GameManager.get_users(game.id)
+
+    refute user[:ready]
+
+    GameManager.ready_user(game.id, "User")
+    {:ok, %{"User" => user}} = GameManager.get_users(game.id)
+
+    assert user[:ready]
+  end
 end

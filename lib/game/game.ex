@@ -2,6 +2,7 @@ defmodule Reactor.Game do
   use GenServer
   alias Reactor.RefHelper
   alias Reactor.RoundSupervisor
+  alias Reactor.EventManager
 
   ##Client API
 
@@ -43,6 +44,10 @@ defmodule Reactor.Game do
     state = put_in(state, [:users, user, :ready], true)
     %{users: %{^user => user}} = state
 
+    if all_users_ready?(state) do
+      GenServer.cast(self, {:start_round})
+    end
+
     {:reply, {:ok, user}, state}
   end
 
@@ -62,8 +67,8 @@ defmodule Reactor.Game do
   end
 
   def handle_cast({:start_round}, %{users: users, game_id: game_id} = state) do
-    users = Enum.map(users, fn({user, _}) -> user end)
     :timer.sleep(3000)
+    users = Enum.map(users, fn({user, _}) -> user end)
     {:ok, pid} = RoundSupervisor.start_round(RefHelper.to_round_sup_ref(game_id), users)
 
     {:noreply, put_in(state, [:current_round], pid)}
@@ -77,8 +82,29 @@ defmodule Reactor.Game do
 
   def handle_cast({:handle_winner, %{winner: winner}}, state) do
     {_, state} = get_and_update_in(state, [:users, winner, :score], &{&1, &1 + 1})
-    GenServer.cast(self, {:start_round})
+    EventManager.fire_event({:round_handled, Map.put(state, :winner, winner)})
+    state = unready_all_users(state)
 
     {:noreply, state}
+  end
+
+  def handle_cast({:handle_no_winner}, state) do
+    EventManager.fire_event({:round_handled, state})
+    state = unready_all_users(state)
+
+    {:noreply, state}
+  end
+
+  defp unready_all_users(%{users: users} = state) do
+    users =
+      users
+      |> Enum.map(fn {name, user} -> {name, put_in(user, [:ready], false)} end)
+      |> Enum.into(%{})
+
+    put_in(state, [:users], users)
+  end
+
+  defp all_users_ready?(state) do
+    Enum.all?(state.users, fn {_name, user} -> user[:ready] end)
   end
 end

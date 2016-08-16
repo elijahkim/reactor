@@ -67,6 +67,13 @@ defmodule Reactor.GameChannel do
     {:noreply, socket}
   end
 
+  def handle_in("new:winner_received", _msg, socket) do
+    %{user: user, game_id: game_id} = socket.assigns
+    GameManager.ready_user(game_id, user)
+
+    {:noreply, socket}
+  end
+
   def handle_info({:after_join, _msg}, socket) do
     push(socket, "new:message", %{message: "Welcome! Please wait for users to join"})
 
