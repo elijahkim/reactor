@@ -60,6 +60,7 @@ class Game extends Component {
 
     this.channel.on("new:winner", (msg) => {
       const { messages } = this.state;
+      this.channel.push("new:winner_received");
 
       this.setState({
         messages: concat(messages, `${msg.user} is the winner!`),

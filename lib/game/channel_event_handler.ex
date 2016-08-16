@@ -17,13 +17,15 @@ defmodule Reactor.ChannelEventHandler do
   end
 
   def handle_event({:new_round, %{game_id: game_id, colors: colors, instruction: instruction}}) do
-    game_id = game_id |> String.replace_leading("game-", "")
-
     GameChannel.broadcast_new_round(game_id, %{colors: colors, instruction: instruction})
   end
 
-  def handle_event({:winner, %{user: user, game_id: game_id}}) do
-    GameChannel.broadcast_winner(game_id, %{user: user})
+  def handle_event({:round_handled, %{winner: winner, game_id: game_id}}) do
+    GameChannel.broadcast_winner(game_id, %{user: winner})
+  end
+
+  def handle_event({:round_handled, %{game_id: game_id}}) do
+    GameChannel.broadcast_winner(game_id, %{user: "No one"})
   end
 
   def handle_event({:new_game, _state}) do

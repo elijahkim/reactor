@@ -1,5 +1,7 @@
 defmodule Reactor.Round do
   use GenServer
+  alias Reactor.EventManager
+  alias Reactor.RefHelper
   @random_color_picker Application.get_env(:reactor, :random_color_picker)
 
   ##Client API
@@ -60,7 +62,7 @@ defmodule Reactor.Round do
       end
 
     emit_winner(name, game_id)
-    GenServer.stop(self, :end_of_round)
+    terminate_self(game_id)
 
     {:noreply, state}
   end
@@ -74,10 +76,16 @@ defmodule Reactor.Round do
   end
 
   defp emit_winner(:no_winner, game_id) do
-    Reactor.EventManager.fire_event({:no_winner, %{game_id: game_id}})
+    EventManager.fire_event({:no_winner, %{game_id: game_id}})
   end
 
   defp emit_winner(winner, game_id) do
-    Reactor.EventManager.fire_event({:winner, %{user: winner, game_id: game_id}})
+    EventManager.fire_event({:winner, %{user: winner, game_id: game_id}})
+  end
+
+  defp terminate_self(game_id) do
+    game_id
+    |> RefHelper.to_round_sup_ref
+    |> Supervisor.terminate_child(self)
   end
 end
