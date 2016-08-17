@@ -18,7 +18,7 @@ defmodule Reactor.GamesSupervisor do
 
   def init(:ok) do
     children = [
-      supervisor(Reactor.GameSupervisor, []),
+      supervisor(Reactor.GameSupervisor, [], restart: :transient),
     ]
 
     supervise(children, strategy: :simple_one_for_one)

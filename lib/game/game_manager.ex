@@ -23,6 +23,10 @@ defmodule Reactor.GameManager do
     GenServer.call(@name, {:get_games})
   end
 
+  def remove_game(game_id) do
+    GenServer.call(@name, {:remove_game, game_id})
+  end
+
   def get_users(game_id) do
     game_id
     |> RefHelper.to_game_ref
@@ -102,5 +106,22 @@ defmodule Reactor.GameManager do
 
   def handle_call({:get_games}, _from, %{games: games} = state) do
     {:reply, {:ok, games}, state}
+  end
+
+  def handle_call({:remove_game, game_id}, _from, %{games: games} = state) do
+    game_id
+    |> RefHelper.to_game_sup_ref
+    |> Supervisor.stop
+
+    new_state = remove_game(state, game_id)
+    IO.inspect new_state
+    {:reply, {:ok}, new_state}
+  end
+
+  def remove_game(%{games: games} = state, game_id) do
+    game = Enum.find(games, fn game -> game.id == game_id end)
+    games = List.delete(games, game)
+
+    put_in(state, [:games], games)
   end
 end

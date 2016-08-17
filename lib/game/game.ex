@@ -3,6 +3,7 @@ defmodule Reactor.Game do
   alias Reactor.RefHelper
   alias Reactor.RoundSupervisor
   alias Reactor.EventManager
+  alias Reactor.GameManager
 
   ##Client API
 
@@ -34,8 +35,13 @@ defmodule Reactor.Game do
     {:reply, {:ok, users}, Map.put(state, :users, users)}
   end
 
-  def handle_call({:remove_user, user}, _from, state) do
+  def handle_call({:remove_user, user}, _from, %{game_id: game_id} = state) do
     {_, %{users: users} = state} = pop_in(state, [:users, user])
+
+    case users do
+      %{} -> GameManager.remove_game(game_id)
+      users -> users
+    end
 
     {:reply, {:ok, users}, state}
   end

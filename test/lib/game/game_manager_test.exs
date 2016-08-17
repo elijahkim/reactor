@@ -19,6 +19,16 @@ defmodule Reactor.GameManagerTest do
     assert assertion
   end
 
+  test "can remove a game", game do
+    {:ok, games} = GameManager.get_games
+    assert Enum.count(games) == 1
+
+    GameManager.remove_game(game.id)
+
+    {:ok, games} = GameManager.get_games
+    assert Enum.count(games) == 0
+  end
+
   test "adds users to games", game do
     {:ok, users} = GameManager.get_users(game.id)
     assert Enum.count(users) == 0
