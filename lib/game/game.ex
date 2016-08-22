@@ -66,12 +66,16 @@ defmodule Reactor.Game do
     {:noreply, state}
   end
 
-  def handle_cast({:start_round}, %{users: users, game_id: game_id} = state) do
-    :timer.sleep(3000)
-    users = Enum.map(users, fn({user, _}) -> user end)
-    {:ok, pid} = RoundSupervisor.start_round(RefHelper.to_round_sup_ref(game_id), users)
+  def handle_cast({:start_round}, %{users: users, game_id: game_id, current_round: current_round} = state) do
+    if current_round do
+      {:noreply, state}
+    else
+      :timer.sleep(3000)
+      users = Enum.map(users, fn({user, _}) -> user end)
+      {:ok, pid} = RoundSupervisor.start_round(RefHelper.to_round_sup_ref(game_id), users)
 
-    {:noreply, put_in(state, [:current_round], pid)}
+      {:noreply, put_in(state, [:current_round], pid)}
+    end
   end
 
   def handle_cast({:submit_answer, %{answer: answer, user: user, et: et}}, %{current_round: current_round} = state) do
@@ -83,16 +87,24 @@ defmodule Reactor.Game do
   def handle_cast({:handle_winner, %{winner: winner}}, state) do
     {_, state} = get_and_update_in(state, [:users, winner, :score], &{&1, &1 + 1})
     EventManager.fire_event({:round_handled, Map.put(state, :winner, winner)})
-    state = unready_all_users(state)
 
-    {:noreply, state}
+    {:noreply, reset_state(state)}
   end
 
   def handle_cast({:handle_no_winner}, state) do
     EventManager.fire_event({:round_handled, state})
-    state = unready_all_users(state)
 
-    {:noreply, state}
+    {:noreply, reset_state(state)}
+  end
+
+  defp reset_state(state) do
+    state
+    |> unready_all_users
+    |> empty_current_round
+  end
+
+  defp empty_current_round(state) do
+    put_in(state, [:current_round], nil)
   end
 
   defp unready_all_users(%{users: users} = state) do
