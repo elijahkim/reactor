@@ -44,18 +44,9 @@ defmodule Reactor.GameChannel do
     :ok
   end
 
-  def handle_in("new:user_ready", _msg, socket) do
-    %{user: user, game_id: game_id} = socket.assigns
-
-    {:ok, %{name: name}} = GameManager.ready_user(game_id, user)
-
-    broadcast(socket, "new:message", %{message: "#{name} is ready"})
-    {:noreply, socket}
-  end
-
   def handle_in("start_game", _msg, socket) do
    %{game_id: game_id} = socket.assigns
-   GameManager.start_game(game_id)
+   GameManager.start_game(game_id, socket.assigns.user)
 
    {:noreply, socket}
   end

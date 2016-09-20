@@ -10,13 +10,8 @@ defmodule Reactor.GameManager do
     GenServer.start_link(@name, :ok, name: @name)
   end
 
-  def create_game do
-    Reactor.Random.random_string(10)
-    |> create_game
-  end
-
-  def create_game(id) do
-    GenServer.call(@name, {:add_game, id})
+  def create_game(name, owner) do
+    GenServer.call(@name, {:add_game, name, owner})
   end
 
   def get_games do
@@ -47,10 +42,8 @@ defmodule Reactor.GameManager do
     |> GenServer.call({:ready_user, user})
   end
 
-  def start_game(game_id) do
-    game_id
-    |> RefHelper.to_game_ref
-    |> GenServer.cast({:start_game})
+  def start_game(game_id, user) do
+    GenServer.call(@name, {:start_game, game_id, user})
   end
 
   def start_round(game_id) do
@@ -91,10 +84,10 @@ defmodule Reactor.GameManager do
     {:ok, state}
   end
 
-  def handle_call({:add_game, name}, _from, %{games: games} = state) do
+  def handle_call({:add_game, name, owner}, _from, %{games: games} = state) do
     game_id = Enum.count(games) + 1
     {:ok, _pid} = Reactor.GamesSupervisor.create_game(game_id)
-    game = %{name: name, id: game_id}
+    game = %{name: name, id: game_id, owner: owner}
     games = games ++ [game]
 
     {:reply, {:ok, game}, put_in(state, [:games], games)}
@@ -102,5 +95,17 @@ defmodule Reactor.GameManager do
 
   def handle_call({:get_games}, _from, %{games: games} = state) do
     {:reply, {:ok, games}, state}
+  end
+
+  def handle_call({:start_game, game_id, owner}, _from,  %{games: games} = state) do
+    with game = Enum.find(games, fn game -> game.id == String.to_integer(game_id) end),
+         ^owner <- game.owner,
+         game_pid = RefHelper.to_game_ref(game_id),
+         game_reply <- GenServer.call(game_pid, {:start_game})
+    do
+      {:reply, game_reply, state}
+    else
+      _ -> {:reply, {:error, "Must be owner"}, state}
+    end
   end
 end

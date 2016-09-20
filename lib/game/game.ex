@@ -55,14 +55,13 @@ defmodule Reactor.Game do
     {:reply, {:ok, current_round}, state}
   end
 
+  def handle_call({:start_game}, _from, state) do
+    {:reply, GenServer.cast(self, {:start_round}), state}
+  end
+
   def handle_cast({:broadcast_init}, state) do
     Reactor.EventManager.fire_event({:new_game, state})
 
-    {:noreply, state}
-  end
-
-  def handle_cast({:start_game}, state) do
-    GenServer.cast(self, {:start_round})
     {:noreply, state}
   end
 
