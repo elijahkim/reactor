@@ -28,16 +28,9 @@ defmodule Reactor.GameSweeper do
   defp process_game(%{id: game_id}) do
     {:ok, users} = GameManager.get_users(game_id)
 
-    IO.puts "========current users========"
-    IO.inspect users
-
     case map_size(users) do
-      0 ->
-        IO.puts "STOPPING GAME"
-        stop_game(game_id)
-      _ ->
-        IO.puts "DOING NOTHING"
-        nil
+      0 -> stop_game(game_id)
+      _ -> nil
     end
   end
 

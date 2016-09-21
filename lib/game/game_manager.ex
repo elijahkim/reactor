@@ -133,21 +133,13 @@ defmodule Reactor.GameManager do
   end
 
   def handle_info({:DOWN, ref, :process, _pid, _reason}, %{games: games} = state) do
-    IO.inspect "hello"
     games = Enum.reject(games, fn %{ref: game_ref} ->
       game_ref == ref
     end)
 
-    {:noreply, Map.put(state, :games, games)}
-  end
+    Reactor.EventManager.fire_event({:new_game, state})
 
-  def handle_info({a, b, c, d, e}, state) do
-    IO.inspect a
-    IO.inspect b
-    IO.inspect c
-    IO.inspect d
-    IO.inspect e
-    {:noreply, state}
+    {:noreply, Map.put(state, :games, games)}
   end
 
   defp remove_ref(game) do
