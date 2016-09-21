@@ -18,7 +18,7 @@ defmodule Reactor.RoundSupervisor do
 
   def init(:ok) do
     children = [
-      worker(Reactor.Round, []),
+      worker(Reactor.Round, [], restart: :transient),
     ]
 
     supervise(children, strategy: :simple_one_for_one)

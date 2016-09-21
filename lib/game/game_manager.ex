@@ -95,19 +95,27 @@ defmodule Reactor.GameManager do
 
   def handle_call({:add_game, name, owner}, _from, %{games: games} = state) do
     game_id = Enum.count(games) + 1
-    {:ok, _pid} = Reactor.GamesSupervisor.create_game(game_id)
-    game = %{name: name, id: game_id, owner: owner}
+    {:ok, pid} = Reactor.GamesSupervisor.create_game(game_id)
+    ref = Process.monitor(pid)
+    game = %{name: name, id: game_id, owner: owner, ref: ref}
     games = games ++ [game]
 
     {:reply, {:ok, game}, put_in(state, [:games], games)}
   end
 
   def handle_call({:get_games}, _from, %{games: games} = state) do
+    games =
+      games
+      |> Enum.map(fn game -> remove_ref(game) end)
+
     {:reply, {:ok, games}, state}
   end
 
   def handle_call({:get_game, id}, _from, %{games: games} = state) do
-    game = Enum.find(games, fn game -> game.id == id end)
+    game =
+      games
+      |> Enum.find(fn game -> game.id == id end)
+      |> remove_ref
 
     {:reply, {:ok, game}, state}
   end
@@ -122,5 +130,20 @@ defmodule Reactor.GameManager do
     else
       _ -> {:reply, {:error, "Must be owner"}, state}
     end
+  end
+
+  def handle_info({:DOWN, ref, :process, _pid, _reason}, %{games: games} = state) do
+    games = Enum.reject(games, fn %{ref: game_ref} ->
+      game_ref == ref
+    end)
+
+    Reactor.EventManager.fire_event({:new_game, state})
+
+    {:noreply, Map.put(state, :games, games)}
+  end
+
+  defp remove_ref(game) do
+    {_, map} = Map.pop(game, :ref)
+    map
   end
 end

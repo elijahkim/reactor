@@ -1,8 +1,6 @@
 defmodule Reactor.Game do
   use GenServer
-  alias Reactor.RefHelper
-  alias Reactor.RoundSupervisor
-  alias Reactor.EventManager
+  alias Reactor.{RefHelper, RoundSupervisor, EventManager}
 
   ##Client API
 
@@ -57,6 +55,10 @@ defmodule Reactor.Game do
 
   def handle_call({:start_game}, _from, state) do
     {:reply, GenServer.cast(self, {:start_round}), state}
+  end
+
+  def handle_call({:get_state}, _from, state) do
+    {:reply, {:ok, state}, state}
   end
 
   def handle_cast({:broadcast_init}, state) do
