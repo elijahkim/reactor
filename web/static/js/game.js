@@ -15,10 +15,10 @@ class Game extends Component {
 
     this.state = {
       connected: false,
-      messages: [],
       users: [],
       state: "waiting",
       showReadyButton: true,
+      welcomeMessage: "",
     }
   }
 
@@ -40,10 +40,8 @@ class Game extends Component {
       .receive("ignore", () => console.log("auth error"))
       .receive("ok", () => this.setState({connected: true}))
 
-    this.channel.on("new:message", (msg) => {
-      const { messages } = this.state;
-
-      this.setState({messages: concat(messages, msg.message)})
+    this.channel.on("new:welcome_message", (msg) => {
+      this.setState({welcomeMessage: msg.message})
     });
 
     this.channel.on("new:user_update", (msg) => {
@@ -63,7 +61,6 @@ class Game extends Component {
       this.channel.push("new:winner_received");
 
       this.setState({
-        messages: concat(messages, `${msg.user} is the winner!`),
         winner: msg.user,
         state: "winner_received",
         users: msg.users,
@@ -84,28 +81,15 @@ class Game extends Component {
     this.setState({state: "answer_selected"})
   }
 
-  renderMessages(messages) {
-    const html = map(messages, (message, index) => {
-      return <p key={index}>{message}</p>
-    })
-
-    return html;
-  }
-
-  renderUsers(users) {
-    const joinedUsers = join(map(users, "name"), ", ")
-    return <p>{ joinedUsers }</p>;
-  }
-
   render() {
     const {
       colors,
       instruction,
-      messages,
       showReadyButton,
       state,
       users,
       winner,
+      welcomeMessage,
     } = this.state;
 
     return (
@@ -118,6 +102,7 @@ class Game extends Component {
           onColorClick={(color) => this.handleClick(color)}
           onStartClick={() => this.handleReadySubmission()}
           users={users}
+          welcomeMessage={welcomeMessage}
         />
       </div>
     );

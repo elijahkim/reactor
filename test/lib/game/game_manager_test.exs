@@ -18,6 +18,12 @@ defmodule Reactor.GameManagerTest do
     assert fetched_game.owner == "Owner"
   end
 
+  test "can get a particular game", %{id: id, name: name} do
+    {:ok, game} = GameManager.get_game(id)
+
+    assert game.name == name
+  end
+
   test "adds users to games", game do
     {:ok, users} = GameManager.get_users(game.id)
     assert Enum.count(users) == 0
