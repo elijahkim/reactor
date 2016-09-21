@@ -18,6 +18,15 @@ defmodule Reactor.GameManager do
     GenServer.call(@name, {:get_games})
   end
 
+  def get_game(game_id) when is_integer(game_id) do
+    GenServer.call(@name, {:get_game, game_id})
+  end
+
+  def get_game(game_id) do
+    game_id = String.to_integer(game_id)
+    GenServer.call(@name, {:get_game, game_id})
+  end
+
   def get_users(game_id) do
     game_id
     |> RefHelper.to_game_ref
@@ -95,6 +104,12 @@ defmodule Reactor.GameManager do
 
   def handle_call({:get_games}, _from, %{games: games} = state) do
     {:reply, {:ok, games}, state}
+  end
+
+  def handle_call({:get_game, id}, _from, %{games: games} = state) do
+    game = Enum.find(games, fn game -> game.id == id end)
+
+    {:reply, {:ok, game}, state}
   end
 
   def handle_call({:start_game, game_id, owner}, _from,  %{games: games} = state) do

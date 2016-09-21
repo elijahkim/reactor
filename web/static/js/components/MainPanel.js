@@ -73,12 +73,14 @@ class MainPanel extends Component {
   }
 
   renderStartButton() {
+    const { welcomeMessage } = this.props;
+
     return (
       <a
         onClick={(e) => this.handleStartClick(e)}
         className="main-panel__start-button"
       >
-        <h1>Press to begin</h1>
+        <h1>{ welcomeMessage }</h1>
       </a>
     )
   }
