@@ -36,7 +36,6 @@ defmodule Reactor.GameChannel do
 
   def terminate(_reason, %{assigns: %{user: user, game_id: game_id}} = socket) do
     {:ok, users} = GameManager.remove_user_from_game(game_id, user)
-    broadcast(socket, "new:user_update", %{users: users})
     :ok
   end
 

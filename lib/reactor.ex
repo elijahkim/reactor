@@ -11,6 +11,7 @@ defmodule Reactor do
       worker(Reactor.EventManager,  []),
       worker(Reactor.ChannelEventHandler, []),
       worker(Reactor.GamesEventHandler, []),
+      worker(Reactor.GameSweeper, []),
     ]
 
     opts = [strategy: :one_for_one, name: Reactor.Supervisor]
