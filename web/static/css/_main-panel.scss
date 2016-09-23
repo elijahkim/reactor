@@ -29,10 +29,10 @@
 .main-panel__start-button {
   display: flex;
   flex: 1;
-
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  flex-flow: column;
 }
 
 .main-panel__colors-container {
