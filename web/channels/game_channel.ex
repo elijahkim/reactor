@@ -1,21 +1,6 @@
 defmodule Reactor.GameChannel do
   use Phoenix.Channel
   alias Reactor.GameManager
-  require Logger
-
-  def broadcast_new_round(game_id, msg) do
-    Reactor.Endpoint.broadcast("game:#{game_id}", "new:round", msg)
-  end
-
-  def broadcast_winner(game_id, %{user: user}) do
-    {:ok, users} = GameManager.get_users(game_id)
-    Reactor.Endpoint.broadcast("game:#{game_id}", "new:winner", %{user: user, users: users})
-  end
-
-  def broadcast_games do
-    {:ok, games} = GameManager.get_games
-    Reactor.Endpoint.broadcast("game:lobby", "new:game_update", %{games: games})
-  end
 
   def join("game:lobby", _message, socket) do
     send(self, {:broadcast_games})
@@ -25,6 +10,7 @@ defmodule Reactor.GameChannel do
 
   def join("game:" <> game_id, message, socket) do
     %{user: user} = socket.assigns
+    game_id = String.to_integer(game_id)
 
     {:ok, users, socket} = add_user_and_game(%{game_id: game_id, user: user}, socket)
 
@@ -87,6 +73,24 @@ defmodule Reactor.GameChannel do
     broadcast(socket, "new:game_update", %{games: games})
 
     {:noreply, socket}
+  end
+
+  def broadcast_new_round(game_id, msg) do
+    Reactor.Endpoint.broadcast("game:#{game_id}", "new:round", msg)
+  end
+
+  def broadcast_winner(game_id, %{user: user}) do
+    {:ok, users} = GameManager.get_users(game_id)
+    Reactor.Endpoint.broadcast("game:#{game_id}", "new:winner", %{user: user, users: users})
+  end
+
+  def broadcast_games do
+    {:ok, games} = GameManager.get_games
+    Reactor.Endpoint.broadcast("game:lobby", "new:game_update", %{games: games})
+  end
+
+  def broadcast_game_winner(game_id, %{user: {_name, user}}) do
+    Reactor.Endpoint.broadcast("game:#{game_id}", "new:final_winner", %{user: user})
   end
 
   defp add_user_and_game(%{game_id: game_id, user: user}, socket) do

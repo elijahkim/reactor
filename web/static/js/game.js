@@ -19,6 +19,7 @@ class Game extends Component {
       state: "waiting",
       showReadyButton: true,
       welcomeMessage: "",
+      winner: null,
     }
   }
 
@@ -66,6 +67,14 @@ class Game extends Component {
         users: msg.users,
       });
     });
+
+    this.channel.on("new:final_winner", (msg) => {
+      const { user } = msg;
+      this.setState({
+        state: "complete",
+        winner: user.name
+      })
+    })
   }
 
   handleReadySubmission(e) {

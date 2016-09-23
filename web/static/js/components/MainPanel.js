@@ -85,6 +85,19 @@ class MainPanel extends Component {
     )
   }
 
+  renderComplete(winner, users) {
+    const sortedUsers = sortBy(users, (user) => -(user.score));
+    const usersHtml = map(sortedUsers, (user, index) => {
+      return <li key={index}><h3>{user.name}: {user.score}</h3></li>
+    });
+
+    return (
+      <div className="main-panel__winner-announcement-container">
+        <h1>Congrats {winner}, you are the winner</h1>
+      </div>
+    )
+  }
+
   renderMain(colors, winner, users, state) {
     switch(state) {
       case "waiting":
@@ -95,6 +108,8 @@ class MainPanel extends Component {
         return this.renderWinner(winner, users);
       case "answer_selected":
         return this.renderWaiting();
+      case "complete":
+        return this.renderComplete(winner, users)
       default:
         return;
     }

@@ -5,13 +5,7 @@
     </div>
 
     <div class="games-index__game-form-container">
-      <h3>Create Game</h3>
-      <%= form_for @conn, game_path(@conn, :create), [as: :game], fn f -> %>
-      <%= label f, :name %>
-      <%= text_input f, :name %>
-
-      <%= submit "Create" %>
-    <% end %>
+      <%= link("Create Game", to: game_path(@conn, :new)) %>
     </div>
   </div>
 </div>
