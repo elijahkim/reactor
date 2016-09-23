@@ -4,19 +4,19 @@ defmodule Reactor.GameSupervisor do
 
   @name __MODULE__
 
-  ##client API
+  ##Client API
 
-  def start_link(name) do
-    Supervisor.start_link(@name, name, name: name)
+  def start_link(name, up_to) do
+    Supervisor.start_link(@name, [name, up_to], name: name)
   end
 
-  ##server callbacks
+  ##Server callbacks
 
-  def init(name) do
+  def init([name, up_to]) do
     id = RefHelper.to_id(name)
 
     children = [
-      worker(Reactor.Game, [RefHelper.to_game_ref(id)]),
+      worker(Reactor.Game, [RefHelper.to_game_ref(id), up_to]),
       supervisor(Reactor.RoundSupervisor, [RefHelper.to_round_sup_ref(id)]),
     ]
 

@@ -10,8 +10,8 @@ defmodule Reactor.GameManager do
     GenServer.start_link(@name, :ok, name: @name)
   end
 
-  def create_game(name, owner) do
-    GenServer.call(@name, {:add_game, name, owner})
+  def create_game(name, owner, up_to \\ 0) do
+    GenServer.call(@name, {:add_game, name, owner, up_to})
   end
 
   def get_games do
@@ -93,9 +93,9 @@ defmodule Reactor.GameManager do
     {:ok, state}
   end
 
-  def handle_call({:add_game, name, owner}, _from, %{games: games} = state) do
+  def handle_call({:add_game, name, owner, up_to}, _from, %{games: games} = state) do
     game_id = Enum.count(games) + 1
-    {:ok, pid} = Reactor.GamesSupervisor.create_game(game_id)
+    {:ok, pid} = Reactor.GamesSupervisor.create_game(game_id, up_to)
     ref = Process.monitor(pid)
     game = %{name: name, id: game_id, owner: owner, ref: ref}
     games = games ++ [game]
@@ -121,7 +121,7 @@ defmodule Reactor.GameManager do
   end
 
   def handle_call({:start_game, game_id, owner}, _from,  %{games: games} = state) do
-    with game = Enum.find(games, fn game -> game.id == String.to_integer(game_id) end),
+    with game = Enum.find(games, fn game -> game.id == game_id end),
          ^owner <- game.owner,
          game_pid = RefHelper.to_game_ref(game_id),
          game_reply <- GenServer.call(game_pid, {:start_game})

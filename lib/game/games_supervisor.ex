@@ -10,8 +10,8 @@ defmodule Reactor.GamesSupervisor do
     Supervisor.start_link(@name, :ok, name: @name)
   end
 
-  def create_game(name) do
-    Supervisor.start_child(@name, [RefHelper.to_game_sup_ref(name)])
+  def create_game(name, up_to) do
+    Supervisor.start_child(@name, [RefHelper.to_game_sup_ref(name), up_to])
   end
 
   ##Server callbacks

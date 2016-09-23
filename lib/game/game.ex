@@ -4,17 +4,18 @@ defmodule Reactor.Game do
 
   ##Client API
 
-  def start_link(name) do
-    GenServer.start_link(__MODULE__, name, name: name)
+  def start_link(name, up_to) do
+    GenServer.start_link(__MODULE__, [name, up_to], name: name)
   end
 
   ##Server Callbacks
 
-  def init(name) do
+  def init([name, up_to]) do
     state = %{
       users: %{},
       current_round: nil,
       game_id: RefHelper.to_id(name),
+      up_to: up_to,
     }
 
     GenServer.cast(self, {:broadcast_init})
@@ -87,7 +88,14 @@ defmodule Reactor.Game do
 
   def handle_cast({:handle_winner, %{winner: winner}}, state) do
     {_, state} = get_and_update_in(state, [:users, winner, :score], &{&1, &1 + 1})
-    EventManager.fire_event({:round_handled, Map.put(state, :winner, winner)})
+    case match_ended?(state) do
+      false ->
+        EventManager.fire_event({:round_handled, Map.put(state, :winner, winner)})
+      nil ->
+        EventManager.fire_event({:round_handled, Map.put(state, :winner, winner)})
+      winner ->
+        EventManager.fire_event({:game_over, Map.put(state, :winner, winner)})
+    end
 
     {:noreply, reset_state(state)}
   end
@@ -119,5 +127,13 @@ defmodule Reactor.Game do
 
   defp all_users_ready?(state) do
     Enum.all?(state.users, fn {_name, user} -> user[:ready] end)
+  end
+
+  defp match_ended?(%{users: users, up_to: up_to}) do
+    if up_to > 0 do
+      Enum.find(users, fn {_, %{score: score}} -> score >= up_to end)
+    else
+      false
+    end
   end
 end

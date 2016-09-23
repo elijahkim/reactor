@@ -1,5 +1,5 @@
 defmodule Reactor.GameManagerTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case
   alias Reactor.GameManager
 
   setup do
