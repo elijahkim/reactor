@@ -1,7 +1,14 @@
 <div class=container>
   <div class=header-container>
     <h1 class=header-header>Reactor</h1>
-    <p class=header-text>Test your reactions against your friends</p>
+    <h2 class=header-text>Test your reactions against your friends</h2>
+    <p>
+      The premise of the game is to have the quickest reaction time.
+
+      The game will spawn 4 random colors in the middle panel. The top of the
+      screen will tell you which color to press. The winner of the round is the
+      person that presses it the quickest.
+    </p>
   </div>
 
   <div>

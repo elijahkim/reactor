@@ -72,15 +72,26 @@ class MainPanel extends Component {
     )
   }
 
-  renderStartButton() {
+  renderStartButton(users) {
     const { welcomeMessage } = this.props;
+    const usersHtml = map(users, (user, index) => {
+      return <li key={index}>{user.name}</li>
+    });
 
     return (
       <a
         onClick={(e) => this.handleStartClick(e)}
         className="main-panel__start-button"
       >
-        <h1>{ welcomeMessage }</h1>
+        <div>
+          <h1>{ welcomeMessage }</h1>
+        </div>
+        <div>
+          <h3>User List</h3>
+          <ul>
+            { usersHtml }
+          </ul>
+        </div>
       </a>
     )
   }
@@ -101,7 +112,7 @@ class MainPanel extends Component {
   renderMain(colors, winner, users, state) {
     switch(state) {
       case "waiting":
-        return this.renderStartButton();
+        return this.renderStartButton(users);
       case "in_progress":
         return this.renderColors(colors);
       case "winner_received":
