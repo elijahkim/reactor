@@ -30,13 +30,16 @@ defmodule Reactor.Mixfile do
   #
   # Type `mix help deps` for examples and options.
   defp deps do
-    [{:phoenix, "~> 1.2.0"},
-     {:gen_stage, "~> 0.4"},
-     {:phoenix_pubsub, "~> 1.0"},
-     {:phoenix_html, "~> 2.6"},
-     {:phoenix_live_reload, "~> 1.0", only: :dev},
-     {:gettext, "~> 0.11"},
-     {:cowboy, "~> 1.0"}]
+    [
+      {:cowboy, "~> 1.0"},
+      {:fsm, "~> 0.2.0"},
+      {:gen_stage, "~> 0.4"},
+      {:gettext, "~> 0.11"},
+      {:phoenix, "~> 1.2.0"},
+      {:phoenix_html, "~> 2.6"},
+      {:phoenix_live_reload, "~> 1.0", only: :dev},
+      {:phoenix_pubsub, "~> 1.0"},
+    ]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.
