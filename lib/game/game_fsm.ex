@@ -9,17 +9,11 @@ defmodule Reactor.GameFSM do
 
   defstate starting do
     defevent start_round, data: count do
-      next_state(:round_started, count + 1)
+      next_state(:in_round, count + 1)
     end
   end
 
-  defstate round_started do
-    defevent wait do
-      next_state(:waiting)
-    end
-  end
-
-  defstate waiting do
+  defstate in_round do
     defevent finish_round do
       next_state(:round_ended)
     end

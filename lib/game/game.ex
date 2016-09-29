@@ -1,6 +1,6 @@
 defmodule Reactor.Game do
   use GenServer
-  alias Reactor.{RefHelper, RoundSupervisor, EventManager}
+  alias Reactor.{RefHelper, RoundSupervisor, EventManager, GameFSM}
 
   ##Client API
 
@@ -16,6 +16,7 @@ defmodule Reactor.Game do
       current_round: nil,
       game_id: RefHelper.to_id(name),
       up_to: up_to,
+      game_state: GameFSM.new
     }
 
     GenServer.cast(self, {:broadcast_init})
@@ -54,7 +55,9 @@ defmodule Reactor.Game do
     {:reply, {:ok, current_round}, state}
   end
 
-  def handle_call({:start_game}, _from, state) do
+  def handle_call({:start_game}, _from, %{game_state: game_state} = state) do
+    state = Map.put(state, :game_state, GameFSM.start(game_state))
+
     {:reply, GenServer.cast(self, {:start_round}), state}
   end
 
@@ -68,19 +71,36 @@ defmodule Reactor.Game do
     {:noreply, state}
   end
 
-  def handle_cast({:start_round}, %{users: users, game_id: game_id, current_round: current_round} = state) do
+  def handle_cast({:start_round}, %{
+    users: users,
+    game_id: game_id,
+    current_round: current_round,
+    game_state: game_state,
+  } = state) do
+
     if current_round do
       {:noreply, state}
     else
       :timer.sleep(3000)
       users = Enum.map(users, fn({user, _}) -> user end)
-      {:ok, pid} = RoundSupervisor.start_round(RefHelper.to_round_sup_ref(game_id), users)
+      {:ok, pid} =
+        game_id
+        |> RefHelper.to_round_sup_ref
+        |> RoundSupervisor.start_round(users)
 
-      {:noreply, put_in(state, [:current_round], pid)}
+      state =
+        state
+        |> put_in([:current_round], pid)
+        |> put_in([:game_state], GameFSM.start_round(game_state))
+
+      {:noreply, state}
     end
   end
 
-  def handle_cast({:submit_answer, %{answer: answer, user: user, et: et}}, %{current_round: current_round} = state) do
+  def handle_cast({:submit_answer,
+    %{answer: answer, user: user, et: et}},
+    %{current_round: current_round} = state) do
+
     GenServer.cast(current_round, {:submit_answer, %{answer: answer, user: user, et: et}})
 
     {:noreply, state}
@@ -125,8 +145,8 @@ defmodule Reactor.Game do
     put_in(state, [:users], users)
   end
 
-  defp all_users_ready?(state) do
-    Enum.all?(state.users, fn {_name, user} -> user[:ready] end)
+  defp all_users_ready?(%{users: users} = state) do
+    Enum.all?(users, fn {_name, user} -> user[:ready] end)
   end
 
   defp match_ended?(%{users: users, up_to: up_to}) do
