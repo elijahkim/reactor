@@ -7,10 +7,10 @@ defmodule Reactor.GameTest do
     GamesSupervisor.create_game(name, 1)
 
     state = %{
-      users: %{},
+      users: %{"eli" => %{score: 0}},
       current_round: nil,
       game_id: name,
-      up_to: 1,
+      up_to: 2,
       game_state: GameFSM.new
     }
 
@@ -39,5 +39,30 @@ defmodule Reactor.GameTest do
       Game.handle_cast({:start_round}, state)
 
     assert game_state.state == :in_round
+  end
+
+  test "state is 'round_ended' when the round ends and a winner isn't found", %{state: state} do
+    %{game_state: game_state} = state
+    new_game_state = game_state |> GameFSM.start |> GameFSM.start_round
+    state = Map.put(state, :game_state, new_game_state)
+
+    {:noreply, %{game_state: game_state}} =
+      Game.handle_cast({:handle_winner, %{winner: "eli"}}, state)
+
+    assert game_state.state == :round_ended
+  end
+
+  test "state is 'game_over' when the winner is found", %{state: state} do
+    %{game_state: game_state} = state
+    new_game_state = game_state |> GameFSM.start |> GameFSM.start_round
+    state =
+      state
+      |> Map.put(:game_state, new_game_state)
+      |> Map.put(:up_to, 1)
+
+    {:noreply, %{game_state: game_state}} =
+      Game.handle_cast({:handle_winner, %{winner: "eli"}}, state)
+
+    assert game_state.state == :game_over
   end
 end

@@ -106,18 +106,37 @@ defmodule Reactor.Game do
     {:noreply, state}
   end
 
-  def handle_cast({:handle_winner, %{winner: winner}}, state) do
+  def handle_cast({:handle_winner, %{winner: winner}}, %{game_state: game_state} = state) do
     {_, state} = get_and_update_in(state, [:users, winner, :score], &{&1, &1 + 1})
     case match_ended?(state) do
       false ->
         EventManager.fire_event({:round_handled, Map.put(state, :winner, winner)})
+        new_game_state = GameFSM.finish_round(game_state)
+        new_state =
+          state
+          |> reset_state
+          |> Map.put(:game_state, new_game_state)
+        {:noreply, new_state}
       nil ->
         EventManager.fire_event({:round_handled, Map.put(state, :winner, winner)})
+        new_game_state = GameFSM.finish_round(game_state)
+        new_state =
+          state
+          |> reset_state
+          |> Map.put(:game_state, new_game_state)
+        {:noreply, new_state}
       winner ->
         EventManager.fire_event({:game_over, Map.put(state, :winner, winner)})
+        new_game_state =
+          game_state
+          |> GameFSM.finish_round
+          |> GameFSM.finish_game
+        new_state =
+          state
+          |> reset_state
+          |> Map.put(:game_state, new_game_state)
+        {:noreply, new_state}
     end
-
-    {:noreply, reset_state(state)}
   end
 
   def handle_cast({:handle_no_winner}, state) do
