@@ -10,7 +10,6 @@ defmodule Reactor.GameChannel do
 
   def join("game:" <> game_id, message, socket) do
     %{user: user} = socket.assigns
-    game_id = String.to_integer(game_id)
 
     {:ok, users, socket} = add_user_and_game(%{game_id: game_id, user: user}, socket)
 

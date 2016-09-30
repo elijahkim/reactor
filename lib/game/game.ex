@@ -71,30 +71,12 @@ defmodule Reactor.Game do
     {:noreply, state}
   end
 
-  def handle_cast({:start_round}, %{
-    users: users,
-    game_id: game_id,
-    current_round: current_round,
-    game_state: game_state,
-  } = state) do
+  def handle_cast({:start_round}, %{current_round: nil} = state) do
+    {:noreply, start_round(state)}
+  end
 
-    if current_round do
-      {:noreply, state}
-    else
-      :timer.sleep(3000)
-      users = Enum.map(users, fn({user, _}) -> user end)
-      {:ok, pid} =
-        game_id
-        |> RefHelper.to_round_sup_ref
-        |> RoundSupervisor.start_round(users)
-
-      state =
-        state
-        |> put_in([:current_round], pid)
-        |> put_in([:game_state], GameFSM.start_round(game_state))
-
-      {:noreply, state}
-    end
+  def handle_cast({:start_round}, %{current_round: current_round} = state) do
+    {:noreply, state}
   end
 
   def handle_cast({:submit_answer,
@@ -143,6 +125,23 @@ defmodule Reactor.Game do
     EventManager.fire_event({:round_handled, state})
 
     {:noreply, reset_state(state)}
+  end
+
+  defp start_round(%{users: users, game_id: game_id, game_state: game_state} = state) do
+    :timer.sleep(3000)
+    users = Enum.map(users, fn({user, _}) -> user end)
+    {:ok, pid} =
+      game_id
+      |> RefHelper.to_round_sup_ref
+      |> RoundSupervisor.start_round(users)
+    new_game_state =
+      game_state
+      |> GameFSM.stage_round
+      |> GameFSM.start_round
+
+    state
+    |> put_in([:current_round], pid)
+    |> put_in([:game_state], new_game_state)
   end
 
   defp reset_state(state) do

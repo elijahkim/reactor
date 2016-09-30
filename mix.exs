@@ -39,6 +39,7 @@ defmodule Reactor.Mixfile do
       {:phoenix_html, "~> 2.6"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:phoenix_pubsub, "~> 1.0"},
+      {:uuid, "~> 1.1"},
     ]
   end
 

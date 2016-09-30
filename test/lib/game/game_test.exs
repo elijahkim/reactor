@@ -4,7 +4,7 @@ defmodule Reactor.GameTest do
 
   setup do
     name = "test"
-    GamesSupervisor.create_game(name, 1)
+    {:ok, pid} = GamesSupervisor.create_game(name, 1)
 
     state = %{
       users: %{"eli" => %{score: 0}},
@@ -13,6 +13,10 @@ defmodule Reactor.GameTest do
       up_to: 2,
       game_state: GameFSM.new
     }
+
+    on_exit fn ->
+      Supervisor.terminate_child(GamesSupervisor, pid)
+    end
 
     {:ok, %{state: state}}
   end
@@ -23,14 +27,14 @@ defmodule Reactor.GameTest do
     assert game_state == GameFSM.new
   end
 
-  test "state is 'starting' when the game starts", %{state: state} do
+  test "state is 'game_starting' when the game starts", %{state: state} do
     {:reply, _, %{game_state: game_state}} =
       Game.handle_call({:start_game}, :hi, state)
 
-    assert game_state.state == :starting
+    assert game_state.state == :game_starting
   end
 
-  test "state is 'in_round' when the round starts", %{state: state} do
+  test "state is 'round_in_progress' when the round starts", %{state: state} do
     %{game_state: game_state} = state
     new_game_state = game_state |> GameFSM.start
     state = Map.put(state, :game_state, new_game_state)
@@ -38,23 +42,32 @@ defmodule Reactor.GameTest do
     {:noreply, %{game_state: game_state}} =
       Game.handle_cast({:start_round}, state)
 
-    assert game_state.state == :in_round
+    assert game_state.state == :round_in_progress
+    assert game_state.data == 1
   end
 
-  test "state is 'round_ended' when the round ends and a winner isn't found", %{state: state} do
+  test "state is 'round_finished' when the round ends and a winner isn't found", %{state: state} do
     %{game_state: game_state} = state
-    new_game_state = game_state |> GameFSM.start |> GameFSM.start_round
+    new_game_state =
+      game_state
+      |> GameFSM.start
+      |> GameFSM.stage_round
+      |> GameFSM.start_round
     state = Map.put(state, :game_state, new_game_state)
 
     {:noreply, %{game_state: game_state}} =
       Game.handle_cast({:handle_winner, %{winner: "eli"}}, state)
 
-    assert game_state.state == :round_ended
+    assert game_state.state == :round_finished
   end
 
   test "state is 'game_over' when the winner is found", %{state: state} do
     %{game_state: game_state} = state
-    new_game_state = game_state |> GameFSM.start |> GameFSM.start_round
+    new_game_state =
+      game_state
+      |> GameFSM.start
+      |> GameFSM.stage_round
+      |> GameFSM.start_round
     state =
       state
       |> Map.put(:game_state, new_game_state)

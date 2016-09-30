@@ -1,10 +1,11 @@
 defmodule Reactor.GameChannelTest do
-  use Reactor.ChannelCase
+  use Reactor.ChannelCase, async: true
 
   @endpoint Reactor.Endpoint
 
   test "can start a game" do
-    {:ok, %{id: id}} = Reactor.GameManager.create_game("Test", "Owner")
+    name = "#{:rand.uniform(10)}-test"
+    {:ok, %{id: id}} = Reactor.GameManager.create_game(name, "Owner")
 
     {:ok, _, socket} =
       socket("game:#{id}", %{user: "Owner"})

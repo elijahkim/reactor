@@ -1,9 +1,14 @@
 defmodule Reactor.GameManagerTest do
   use ExUnit.Case, async: true
-  alias Reactor.GameManager
+  alias Reactor.{GameManager, RefHelper, GamesSupervisor}
 
   setup do
-    {:ok, %{name: name, id: id}} = GameManager.create_game(:Test, "Owner")
+    name = :"#{:rand.uniform(100)}-test"
+    {:ok, %{name: name, id: id}} = GameManager.create_game(name, "Owner")
+
+    on_exit fn ->
+      Supervisor.terminate_child(GamesSupervisor, RefHelper.to_game_sup_ref(id))
+    end
 
     {:ok, %{name: name, id: id}}
   end
