@@ -1,9 +1,14 @@
 defmodule Reactor.GameManagerTest do
-  use ExUnit.Case
-  alias Reactor.GameManager
+  use ExUnit.Case, async: true
+  alias Reactor.{GameManager, RefHelper, GamesSupervisor}
 
   setup do
-    {:ok, %{name: name, id: id}} = GameManager.create_game(:Test, "Owner")
+    name = :"#{:rand.uniform(100)}-test"
+    {:ok, %{name: name, id: id}} = GameManager.create_game(name, "Owner")
+
+    on_exit fn ->
+      Supervisor.terminate_child(GamesSupervisor, RefHelper.to_game_sup_ref(id))
+    end
 
     {:ok, %{name: name, id: id}}
   end
@@ -53,21 +58,8 @@ defmodule Reactor.GameManagerTest do
     assert is_pid(round)
   end
 
-  # TODO
-  # test "adds the winner to the game when a round is over", game do
-  #   GameManager.start_round(game.id)
-  #   GameManager.add_user_to_game(game.id, "User")
-  #   GameManager.start_game(game.id)
-  #   :timer.sleep(3000)
-  #   GameManager.submit_answer(game.id, "User", "blue", 1)
-  #   :timer.sleep(3000)
-  #
-  #   {:ok, %{"User" => user}} = GameManager.get_users(game.id)
-  #
-  #   assert user.score == 1
-  # end
-
   test "readys users in a game", game do
+    GameManager.start_game(game.id, "Owner")
     GameManager.add_user_to_game(game.id, "User")
     {:ok, %{"User" => user}} = GameManager.get_users(game.id)
 

@@ -18,12 +18,7 @@ defmodule Reactor.GameManager do
     GenServer.call(@name, {:get_games})
   end
 
-  def get_game(game_id) when is_integer(game_id) do
-    GenServer.call(@name, {:get_game, game_id})
-  end
-
   def get_game(game_id) do
-    game_id = String.to_integer(game_id)
     GenServer.call(@name, {:get_game, game_id})
   end
 
@@ -94,7 +89,7 @@ defmodule Reactor.GameManager do
   end
 
   def handle_call({:add_game, name, owner, up_to}, _from, %{games: games} = state) do
-    game_id = Enum.count(games) + 1
+    game_id = UUID.uuid1
     {:ok, pid} = Reactor.GamesSupervisor.create_game(game_id, up_to)
     ref = Process.monitor(pid)
     game = %{name: name, id: game_id, owner: owner, ref: ref}

@@ -1,6 +1,6 @@
 defmodule Reactor.Game do
   use GenServer
-  alias Reactor.{RefHelper, RoundSupervisor, EventManager}
+  alias Reactor.{RefHelper, RoundSupervisor, EventManager, GameFSM}
 
   ##Client API
 
@@ -16,6 +16,7 @@ defmodule Reactor.Game do
       current_round: nil,
       game_id: RefHelper.to_id(name),
       up_to: up_to,
+      game_state: GameFSM.new
     }
 
     GenServer.cast(self, {:broadcast_init})
@@ -54,7 +55,9 @@ defmodule Reactor.Game do
     {:reply, {:ok, current_round}, state}
   end
 
-  def handle_call({:start_game}, _from, state) do
+  def handle_call({:start_game}, _from, %{game_state: game_state} = state) do
+    state = Map.put(state, :game_state, GameFSM.start(game_state))
+
     {:reply, GenServer.cast(self, {:start_round}), state}
   end
 
@@ -68,42 +71,77 @@ defmodule Reactor.Game do
     {:noreply, state}
   end
 
-  def handle_cast({:start_round}, %{users: users, game_id: game_id, current_round: current_round} = state) do
-    if current_round do
-      {:noreply, state}
-    else
-      :timer.sleep(3000)
-      users = Enum.map(users, fn({user, _}) -> user end)
-      {:ok, pid} = RoundSupervisor.start_round(RefHelper.to_round_sup_ref(game_id), users)
-
-      {:noreply, put_in(state, [:current_round], pid)}
-    end
+  def handle_cast({:start_round}, %{current_round: nil} = state) do
+    {:noreply, start_round(state)}
   end
 
-  def handle_cast({:submit_answer, %{answer: answer, user: user, et: et}}, %{current_round: current_round} = state) do
+  def handle_cast({:start_round}, %{current_round: current_round} = state) do
+    {:noreply, state}
+  end
+
+  def handle_cast({:submit_answer,
+    %{answer: answer, user: user, et: et}},
+    %{current_round: current_round} = state) do
+
     GenServer.cast(current_round, {:submit_answer, %{answer: answer, user: user, et: et}})
 
     {:noreply, state}
   end
 
-  def handle_cast({:handle_winner, %{winner: winner}}, state) do
+  def handle_cast({:handle_winner, %{winner: winner}}, %{game_state: game_state} = state) do
     {_, state} = get_and_update_in(state, [:users, winner, :score], &{&1, &1 + 1})
     case match_ended?(state) do
       false ->
         EventManager.fire_event({:round_handled, Map.put(state, :winner, winner)})
+        new_game_state = GameFSM.finish_round(game_state)
+        new_state =
+          state
+          |> reset_state
+          |> Map.put(:game_state, new_game_state)
+        {:noreply, new_state}
       nil ->
         EventManager.fire_event({:round_handled, Map.put(state, :winner, winner)})
+        new_game_state = GameFSM.finish_round(game_state)
+        new_state =
+          state
+          |> reset_state
+          |> Map.put(:game_state, new_game_state)
+        {:noreply, new_state}
       winner ->
         EventManager.fire_event({:game_over, Map.put(state, :winner, winner)})
+        new_game_state =
+          game_state
+          |> GameFSM.finish_round
+          |> GameFSM.finish_game
+        new_state =
+          state
+          |> reset_state
+          |> Map.put(:game_state, new_game_state)
+        {:noreply, new_state}
     end
-
-    {:noreply, reset_state(state)}
   end
 
   def handle_cast({:handle_no_winner}, state) do
     EventManager.fire_event({:round_handled, state})
 
     {:noreply, reset_state(state)}
+  end
+
+  defp start_round(%{users: users, game_id: game_id, game_state: game_state} = state) do
+    :timer.sleep(3000)
+    users = Enum.map(users, fn({user, _}) -> user end)
+    {:ok, pid} =
+      game_id
+      |> RefHelper.to_round_sup_ref
+      |> RoundSupervisor.start_round(users)
+    new_game_state =
+      game_state
+      |> GameFSM.stage_round
+      |> GameFSM.start_round
+
+    state
+    |> put_in([:current_round], pid)
+    |> put_in([:game_state], new_game_state)
   end
 
   defp reset_state(state) do
@@ -125,8 +163,8 @@ defmodule Reactor.Game do
     put_in(state, [:users], users)
   end
 
-  defp all_users_ready?(state) do
-    Enum.all?(state.users, fn {_name, user} -> user[:ready] end)
+  defp all_users_ready?(%{users: users} = state) do
+    Enum.all?(users, fn {_name, user} -> user[:ready] end)
   end
 
   defp match_ended?(%{users: users, up_to: up_to}) do
